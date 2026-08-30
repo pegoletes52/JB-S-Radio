@@ -1,0 +1,2018 @@
+<!DOCTYPE html>
+<html lang="es" data-jb-theme="mint">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JB's Radio</title>
+<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#00C9A7">
+<style>
+  :root[data-jb-theme="mint"]    { --jb-bg:#EAF6F4; --jb-surface:#FFFFFF; --jb-accent-1:#00C9A7; --jb-accent-2:#00E0A0; --jb-text:#0F2A26; --jb-text-2:#4A6B66; }
+  :root[data-jb-theme="ocean"]   { --jb-bg:#E8F4FB; --jb-surface:#FFFFFF; --jb-accent-1:#0EA5E9; --jb-accent-2:#06B6D4; --jb-text:#0C2733; --jb-text-2:#4C6C78; }
+  :root[data-jb-theme="sage"]    { --jb-bg:#EFF5EC; --jb-surface:#FFFFFF; --jb-accent-1:#6BA368; --jb-accent-2:#A3D9A5; --jb-text:#1E2E1B; --jb-text-2:#546B50; }
+  :root[data-jb-theme="teal"]    { --jb-bg:#E6F7F6; --jb-surface:#FFFFFF; --jb-accent-1:#009688; --jb-accent-2:#26C6DA; --jb-text:#0B2C2A; --jb-text-2:#4A6C6A; }
+  :root[data-jb-theme="coral"]   { --jb-bg:#FFF1EC; --jb-surface:#FFFFFF; --jb-accent-1:#FF6B5B; --jb-accent-2:#FF9472; --jb-text:#3A1712; --jb-text-2:#7A4E45; }
+  :root[data-jb-theme="lavanda"] { --jb-bg:#F3EFFB; --jb-surface:#FFFFFF; --jb-accent-1:#8B5CF6; --jb-accent-2:#C084FC; --jb-text:#241A3D; --jb-text-2:#5D5075; }
+  :root[data-jb-theme="noche"]   { --jb-bg:#0A0E1A; --jb-surface:#141A2B; --jb-accent-1:#00E0A0; --jb-accent-2:#26C6DA; --jb-text:#EDEFF5; --jb-text-2:#8C96B3; }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html,body { margin:0; padding:0; }
+  body {
+    background: var(--jb-bg);
+    color: var(--jb-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size:20.4px;
+    min-height: 100vh;
+    transition: background 300ms ease, color 300ms ease;
+    position: relative;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(color-mix(in srgb, var(--jb-accent-1) 6%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in srgb, var(--jb-accent-1) 6%, transparent) 1px, transparent 1px);
+    background-size: 34px 34px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  :root[data-jb-theme="noche"] body::before { opacity: 1; }
+
+  .jb-mono { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; letter-spacing: 0.02em; }
+
+  header {
+    position: sticky; top: 0; z-index: 20;
+    display:flex; align-items:center; justify-content:space-between;
+    gap: 12px; padding: 14px 16px;
+    background: color-mix(in srgb, var(--jb-surface) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid color-mix(in srgb, var(--jb-accent-1) 25%, transparent);
+  }
+  .jb-logo { display:flex; align-items:center; gap:10px; }
+  .jb-logo-mark {
+    width: 34px; height: 34px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--jb-accent-1), var(--jb-accent-2));
+    display:flex; align-items:center; justify-content:center;
+    font-size:19.2px; flex-shrink:0;
+    box-shadow: 0 0 16px color-mix(in srgb, var(--jb-accent-1) 55%, transparent);
+    animation: jbPulseGlow 2.4s ease-in-out infinite;
+  }
+  .jb-title {
+    font-size:22.8px; font-weight: 800; letter-spacing: 0.02em;
+    background: linear-gradient(135deg, var(--jb-accent-1), var(--jb-accent-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    text-transform: uppercase;
+  }
+  .jb-subtitle { font-size:13.2px; color: var(--jb-text-2); text-transform: uppercase; letter-spacing: 0.12em; }
+
+  .theme-picker { position:relative; }
+  .theme-toggle {
+    display:flex; align-items:center; gap:6px; padding:6px 10px 6px 6px; border-radius:999px; border:2px solid transparent;
+    background: var(--jb-surface) padding-box, linear-gradient(135deg, var(--jb-accent-1), var(--jb-accent-2)) border-box;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    cursor:pointer;
+  }
+  .theme-toggle-swatch { width:20px; height:20px; border-radius:50%; background: linear-gradient(135deg, var(--jb-accent-1), var(--jb-accent-2)); flex-shrink:0; }
+  .theme-toggle-chevron { font-size:12px; color: var(--jb-text-2); transition: transform 200ms ease; }
+  .theme-toggle.open .theme-toggle-chevron { transform: rotate(180deg); }
+  .theme-dropdown {
+    display:none; position:absolute; top:calc(100% + 8px); right:0; z-index:25;
+    background: var(--jb-surface); border-radius:16px; padding:8px; min-width:168px;
+    border: 2px solid color-mix(in srgb, var(--jb-accent-1) 40%, transparent);
+    box-shadow: 0 14px 32px rgba(0,0,0,0.2);
+    animation: jbFadeSlideIn 200ms ease-out;
+  }
+  .theme-dropdown.open { display:flex; flex-direction:column; gap:2px; }
+  .theme-option {
+    display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:10px; border:none;
+    background:transparent; cursor:pointer; font-size:16.2px; font-weight:700; color: var(--jb-text); text-align:left;
+  }
+  .theme-option:hover { background: color-mix(in srgb, var(--jb-accent-1) 10%, transparent); }
+  .theme-option.active { background: color-mix(in srgb, var(--jb-accent-1) 15%, transparent); }
+  .theme-option .swatch { width:18px; height:18px; border-radius:50%; flex-shrink:0; }
+  .theme-option[data-theme="mint"] .swatch { background: linear-gradient(135deg,#00C9A7,#00E0A0); }
+  .theme-option[data-theme="ocean"] .swatch { background: linear-gradient(135deg,#0EA5E9,#06B6D4); }
+  .theme-option[data-theme="sage"] .swatch { background: linear-gradient(135deg,#6BA368,#A3D9A5); }
+  .theme-option[data-theme="teal"] .swatch { background: linear-gradient(135deg,#009688,#26C6DA); }
+  .theme-option[data-theme="coral"] .swatch { background: linear-gradient(135deg,#FF6B5B,#FF9472); }
+  .theme-option[data-theme="lavanda"] .swatch { background: linear-gradient(135deg,#8B5CF6,#C084FC); }
+  .theme-option[data-theme="noche"] .swatch { background: #0A0E1A; border: 1px solid #555; }
+
+  main { position:relative; z-index:1; max-width: 720px; margin: 0 auto; padding: 16px 16px 140px; }
+
+  .jb-panel {
+    background: var(--jb-surface); border-radius: 16px;
+    border: 2px solid color-mix(in srgb, var(--jb-accent-1) 45%, transparent);
+    box-shadow: 0 10px 26px rgba(0,0,0,0.13), 0 0 0 1px rgba(0,0,0,0.04);
+    padding: 14px; margin-bottom: 14px;
+    animation: jbFadeSlideIn 400ms ease-out;
+  }
+
+  .jb-input {
+    width:100%; padding: 12px 14px; border-radius: 12px;
+    border: 2px solid color-mix(in srgb, var(--jb-accent-1) 40%, transparent);
+    background: var(--jb-bg); color: var(--jb-text);
+    font-size:19.2px; outline:none;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+    transition: border-color 200ms ease, box-shadow 200ms ease;
+  }
+  .jb-input:focus { border-color: var(--jb-accent-1); box-shadow: 0 0 12px color-mix(in srgb, var(--jb-accent-1) 40%, transparent); }
+
+  /* ---------- Chips país: sin scroll, en cuadrícula, cascada ---------- */
+  .section-label { font-size:13.2px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--jb-text-2); margin: 14px 0 8px 2px; }
+
+  .country-row { display:grid; grid-template-columns: repeat(2, 1fr); gap:12px; padding: 4px 0 4px; }
+
+  .icon-badge {
+    position:relative; z-index:1; width:78px; height:78px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:40px;
+    background:
+      radial-gradient(circle at 32% 26%, rgba(255,255,255,0.95), transparent 45%),
+      linear-gradient(155deg, var(--jb-accent-2), var(--jb-accent-1));
+    box-shadow:
+      0 9px 18px rgba(0,0,0,0.32),
+      0 0 0 5px color-mix(in srgb, var(--jb-accent-1) 14%, transparent),
+      inset 0 2px 3px rgba(255,255,255,0.7),
+      inset 0 -5px 9px rgba(0,0,0,0.28);
+  }
+  .icon-badge span { filter: drop-shadow(0 2px 3px rgba(0,0,0,0.35)); transform: translateY(-1px); }
+
+  .country-chip {
+    position: relative; width:100%; height: 136px; border-radius: 24px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:9px;
+    cursor:pointer; overflow:hidden;
+    border: 3px solid transparent;
+    background:
+      radial-gradient(circle at 25% 15%, color-mix(in srgb, var(--jb-accent-1) 22%, transparent), transparent 55%) padding-box,
+      radial-gradient(circle at 80% 90%, color-mix(in srgb, var(--jb-accent-2) 14%, transparent), transparent 50%) padding-box,
+      var(--jb-surface) padding-box,
+      linear-gradient(135deg, var(--jb-accent-1), var(--jb-accent-2)) border-box;
+    box-shadow:
+      0 14px 28px rgba(0,0,0,0.16),
+      0 0 0 1px rgba(0,0,0,0.05),
+      inset 0 1px 0 rgba(255,255,255,0.55);
+    opacity:0; transform: translateY(18px) scale(0.9);
+    animation: chipCascadeIn 480ms cubic-bezier(.2,.9,.25,1.15) forwards, chipAmbientGlow 4200ms ease-in-out 900ms infinite;
+  }
+  .country-chip::before {
+    content:""; position:absolute; inset:0; pointer-events:none; opacity:0.35;
+    background-image: radial-gradient(color-mix(in srgb, var(--jb-accent-1) 45%, transparent) 1px, transparent 1.4px);
+    background-size: 9px 9px;
+    mask-image: linear-gradient(160deg, black, transparent 70%);
+  }
+  .country-chip:nth-child(1){ animation-delay: 30ms, 900ms; } .country-chip:nth-child(2){ animation-delay: 80ms, 1050ms; }
+  .country-chip:nth-child(3){ animation-delay: 130ms, 1200ms; } .country-chip:nth-child(4){ animation-delay: 180ms, 1350ms; }
+  .country-chip:nth-child(5){ animation-delay: 230ms, 1500ms; } .country-chip:nth-child(6){ animation-delay: 280ms, 1650ms; }
+  .country-chip:nth-child(n+7){ animation-delay: 320ms, 1800ms; }
+
+  @keyframes chipAmbientGlow {
+    0%,100% { box-shadow: 0 14px 28px rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.55); }
+    50% { box-shadow: 0 16px 32px rgba(0,0,0,0.19), 0 0 0 1px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.55), 0 0 24px color-mix(in srgb, var(--jb-accent-1) 50%, transparent); }
+  }
+
+  .country-chip::after {
+    content:""; position:absolute; top:0; left:-60%; width:40%; height:100%;
+    background: linear-gradient(115deg, transparent, rgba(255,255,255,0.55), transparent);
+    transform: skewX(-18deg); transition: left 550ms ease; pointer-events:none; z-index:1;
+  }
+  .country-chip:hover::after { left: 130%; }
+  .country-chip:hover { transform: translateY(-3px) scale(1.03); }
+  .country-chip:active { transform: scale(0.96); }
+  .country-label { position:relative; z-index:1; font-size:14.4px; font-weight: 800; text-transform:uppercase; letter-spacing:0.04em; text-align:center; line-height:1.15; padding:0 6px; color: var(--jb-text); }
+  .country-chip.active {
+    background:
+      radial-gradient(circle at 25% 15%, rgba(255,255,255,0.35), transparent 55%) padding-box,
+      linear-gradient(150deg, var(--jb-accent-1), var(--jb-accent-2)) padding-box,
+      linear-gradient(135deg, #fff, var(--jb-accent-2)) border-box;
+    border-width: 2px;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--jb-accent-1) 40%, transparent), 0 0 26px color-mix(in srgb, var(--jb-accent-1) 55%, transparent), 0 12px 26px rgba(0,0,0,0.18);
+  }
+  .country-chip.active .country-label { color:#fff; text-shadow: 0 1px 3px rgba(0,0,0,0.25); }
+  .country-chip.active .icon-badge {
+    background: radial-gradient(circle at 32% 26%, rgba(255,255,255,0.95), transparent 45%), rgba(255,255,255,0.28);
+    box-shadow: 0 7px 14px rgba(0,0,0,0.25), inset 0 2px 3px rgba(255,255,255,0.75), inset 0 -5px 8px rgba(0,0,0,0.2);
+  }
+
+  .country-chip.add-chip {
+    animation: chipCascadeIn 480ms cubic-bezier(.2,.9,.25,1.15) forwards;
+    background: transparent padding-box, transparent padding-box, transparent padding-box,
+      repeating-linear-gradient(135deg, color-mix(in srgb, var(--jb-accent-1) 55%, transparent) 0 8px, transparent 8px 16px) border-box;
+    box-shadow:none;
+  }
+  .country-chip.add-chip::before { display:none; }
+  .country-chip.add-chip .icon-badge { background: transparent; box-shadow:none; font-size:34px; color: var(--jb-accent-1); }
+  .country-chip.add-chip .country-label { color: var(--jb-text-2); }
+
+  .chip-del {
+    position:absolute; top:6px; right:6px; width:26px; height:26px; border-radius:50%;
+    background: rgba(0,0,0,0.45); color:#fff; font-size:16px; border:none; z-index:3;
+    display:none; align-items:center; justify-content:center; cursor:pointer;
+    animation: chipDelPop 220ms ease;
+  }
+  .country-row.edit-mode .country-chip:not(.add-chip):not(.chip-fixed) .chip-del { display:flex; }
+  .country-row.edit-mode .country-chip:not(.add-chip):not(.chip-fixed) {
+    outline: 3px dashed var(--jb-accent-1); outline-offset: 3px;
+    animation: chipCascadeIn 480ms cubic-bezier(.2,.9,.25,1.15) forwards, chipEditPulse 900ms ease-in-out infinite;
+  }
+  @keyframes chipEditPulse { 0%,100% { outline-color: color-mix(in srgb, var(--jb-accent-1) 100%, transparent); } 50% { outline-color: color-mix(in srgb, var(--jb-accent-1) 35%, transparent); } }
+  @keyframes chipDelPop { from { transform: scale(0);} to { transform: scale(1);} }
+
+  .back-country-pill {
+    display:none; align-items:center; gap:10px; width:100%; padding:12px 16px; margin:4px 0 10px;
+    border-radius:16px; border:none; cursor:pointer; text-align:left;
+    background:
+      radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--jb-accent-1) 20%, transparent), transparent 55%) padding-box,
+      var(--jb-surface) padding-box,
+      linear-gradient(135deg, var(--jb-accent-1), var(--jb-accent-2)) border-box;
+    border-width:2px; border-style:solid; border-color:transparent;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+  }
+  .back-country-pill.show { display:flex; }
+  .back-country-pill .chevron { font-size:20px; color: var(--jb-accent-1); font-weight:900; }
+  .back-country-pill .pill-icon { width:40px; height:40px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:20px;
+    background: linear-gradient(155deg, var(--jb-accent-2), var(--jb-accent-1)); box-shadow: inset 0 1px 2px rgba(255,255,255,0.6), inset 0 -2px 4px rgba(0,0,0,0.25); }
+  .back-country-pill .pill-text { flex:1; }
+  .back-country-pill .pill-label { font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color: var(--jb-text-2); font-weight:700; }
+  .back-country-pill .pill-value { font-size:16.8px; font-weight:800; color: var(--jb-text); }
+
+  @keyframes chipCascadeIn { 0% { opacity:0; transform: translateY(18px) scale(0.9);} 60% { opacity:1;} 100% { opacity:1; transform: translateY(0) scale(1);} }
+
+  /* ---------- Chips de género ---------- */
+  .genre-row { display:none; flex-wrap:wrap; gap:9px; padding: 2px 0 4px; }
+  .genre-row.show { display:flex; }
+  .genre-icon-badge {
+    width:26px; height:26px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:14px;
+    background: radial-gradient(circle at 32% 26%, rgba(255,255,255,0.95), transparent 45%), linear-gradient(155deg, var(--jb-accent-2), var(--jb-accent-1));
+    box-shadow: 0 3px 7px rgba(0,0,0,0.28), inset 0 1.5px 2px rgba(255,255,255,0.7), inset 0 -2px 4px rgba(0,0,0,0.25);
+  }
+  .genre-chip {
+    position:relative; overflow:hidden;
+    padding: 8px 15px 8px 8px; border-radius: 999px; font-size:15.6px; font-weight:700;
+    border: 3px solid transparent;
+    background:
+      var(--jb-surface) padding-box,
+      linear-gradient(135deg, var(--jb-accent-1), var(--jb-accent-2)) border-box;
+    color: var(--jb-text); cursor:pointer; white-space:nowrap; display:flex; align-items:center; gap:8px;
+    opacity:0; transform: translateX(-10px); animation: genreCascadeIn 400ms ease forwards;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.04); transition: transform 150ms ease, box-shadow 150ms ease;
+  }
+  .genre-chip:hover { box-shadow: 0 4px 16px color-mix(in srgb, var(--jb-accent-1) 30%, transparent); }
+  .genre-row.show .genre-chip:nth-child(1){ animation-delay: 20ms; } .genre-row.show .genre-chip:nth-child(2){ animation-delay: 60ms; }
+  .genre-row.show .genre-chip:nth-child(3){ animation-delay: 100ms; } .genre-row.show .genre-chip:nth-child(4){ animation-delay: 140ms; }
+  .genre-row.show .genre-chip:nth-child(5){ animation-delay: 180ms; } .genre-row.show .genre-chip:nth-child(6){ animation-delay: 220ms; }
+  .genre-row.show .genre-chip:nth-child(7){ animation-delay: 260ms; } .genre-row.show .genre-chip:nth-child(8){ animation-delay: 300ms; }
+  .genre-row.show .genre-chip:nth-child(9){ animation-delay: 340ms; } .genre-row.show .genre-chip:nth-child(10){ animation-delay: 380ms; }
+  .genre-row.show .genre-chip:nth-child(n+11){ animation-delay: 420ms; }
+  @keyframes genreCascadeIn { to { opacity:1; transform: translateX(0); } }
+  .genre-chip:hover { transform: scale(1.05); }
+  .genre-chip.active { background: linear-gradient(135deg, var(--jb-accent-1), var(--jb-accent-2)); color: #fff; border-color: transparent; box-shadow: 0 0 16px color-mix(in srgb, var(--jb-accent-1) 50%, transparent); }
+  .genre-chip.active .genre-icon-badge { background: radial-gradient(circle at 32% 26%, rgba(255,255,255,0.95), transparent 45%), rgba(255,255,255,0.28); }
+  .genre-chip.add-chip { background:transparent; border-style:dashed; color: var(--jb-text-2); padding:8px 15px; }
+  .genre-del { margin-left:2px; opacity:0.9; display:none; }
+  .genre-row.edit-mode .genre-chip:not(.add-chip):not(.chip-fixed) .genre-del { display:inline-flex; }
+  .genre-row.edit-mode .genre-chip:not(.add-chip):not(.chip-fixed) {
+    outline: 3px dashed var(--jb-accent-1); outline-offset: 3px;
+    animation: genreCascadeIn 400ms ease forwards, chipEditPulse 900ms ease-in-out infinite;
+  }
+
+  /* ---------- Formulario unificado "crear chip" ---------- */
+  .chip-type-toggle { display:flex; gap:8px; }
+  .chip-type-btn {
+    flex:1; padding:10px; border-radius:10px; border:1.5px solid color-mix(in srgb, var(--jb-accent-1) 30%, transparent);
+    background: var(--jb-surface); color: var(--jb-text-2); font-weight:700; font-size:14.4px; cursor:pointer;
+  }
+  .chip-type-btn.active { background: linear-gradient(135deg, var(--jb-accent-1), var(--jb-accent-2)); color:#fff; border-color:transparent; }
+
+  .add-chip-list { max-height:280px; overflow-y:auto; display:flex; flex-direction:column; gap:6px; padding-right:2px; }
+  .add-chip-option {
+    display:flex; align-items:center; gap:10px; padding:11px 13px; border-radius:12px;
+    border:2px solid transparent;
+    background: var(--jb-surface) padding-box, linear-gradient(135deg, var(--jb-accent-1), var(--jb-accent-2)) border-box;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    cursor:pointer; font-weight:700; font-size:14.4px; color: var(--jb-text);
+    transition: transform 120ms ease;
+  }
+  .add-chip-option:active { transform: scale(0.97); }
+  .add-chip-option .opt-icon {
+    width:30px; height:30px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:16px;
+    background: linear-gradient(155deg, var(--jb-accent-2), var(--jb-accent-1));
+    box-shadow: inset 0 1.5px 2px rgba(255,255,255,0.65), inset 0 -2px 3px rgba(0,0,0,0.25);
+  }
+  .add-chip-empty { text-align:center; padding:14px; font-size:13.2px; color: var(--jb-text-2); }
+
+  /* ---------- Formulario inline "crear chip" ---------- */
+  .inline-form {
+    display:none; flex-direction:column; gap:8px; margin-top:8px; padding:12px;
+    border-radius: 14px; background: color-mix(in srgb, var(--jb-accent-1) 6%, var(--jb-surface));
+    border: 2px dashed color-mix(in srgb, var(--jb-accent-1) 55%, transparent);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.09);
+    animation: jbFadeSlideIn 250ms ease-out;
+  }
+  .inline-form.show { display:flex; }
+  .inline-form .hint { font-size:13.8px; color: var(--jb-text-2); }
+  .inline-form-row { display:flex; gap:8px; }
+  .inline-form-row button { flex:1; padding:10px; border-radius:10px; border:none; font-weight:700; cursor:pointer; font-size:16.2px; }
+  .btn-save { background: linear-gradient(135deg, var(--jb-accent-1), var(--jb-accent-2)); color:#fff; }
+  .btn-cancel { background: color-mix(in srgb, var(--jb-text-2) 12%, var(--jb-surface)); color: var(--jb-text-2); }
+  .manual-link {
+    display:inline-flex; padding:8px 14px; border-radius:999px; border:2px solid transparent;
+    background: var(--jb-surface) padding-box, linear-gradient(135deg, var(--jb-accent-1), var(--jb-accent-2)) border-box;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    font-size:13.8px; color: var(--jb-accent-1); cursor:pointer; font-weight:700;
+  }
+  .unverified-badge { font-size:15.6px; margin-left:2px; opacity:0.85; }
+  .test-url-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .btn-test {
+    padding:9px 14px; border-radius:10px; border:1.5px solid color-mix(in srgb, var(--jb-accent-1) 40%, transparent);
+    background: var(--jb-surface); color: var(--jb-accent-1); font-weight:700; font-size:13.2px; cursor:pointer; flex-shrink:0;
+  }
+  .test-status { font-size:13.2px; font-weight:700; }
+  .test-status.testing { color: var(--jb-text-2); }
+  .test-status.ok { color:#1E9E5A; }
+  .test-status.bad { color:#E1493B; }
+  .test-status.warn { color:#C98A12; }
+
+  /* ---------- Tabs principales ---------- */
+  .tabs { display:flex; gap:8px; margin-bottom: 14px; flex-wrap:wrap; }
+  .tab-btn {
+    flex:1; min-width:100px; padding: 10px; border-radius: 12px; border:1.5px solid transparent;
+    background: var(--jb-surface) padding-box, linear-gradient(135deg, color-mix(in srgb, var(--jb-accent-1) 45%, transparent), color-mix(in srgb, var(--jb-accent-2) 15%, transparent)) border-box;
+    color: var(--jb-text-2); font-weight:700; font-size:16.2px;
+    cursor:pointer; text-transform: uppercase; letter-spacing:0.04em; transition: all 200ms ease;
+  }
+  .tab-btn.active { background: linear-gradient(135deg, var(--jb-accent-1), var(--jb-accent-2)); color:#fff; border-color:transparent; box-shadow: 0 0 14px color-mix(in srgb, var(--jb-accent-1) 40%, transparent); }
+
+  .subtabs { display:flex; gap:8px; margin-bottom:12px; }
+  .subtab-btn {
+    padding:9px 15px; border-radius:999px; border:2px solid transparent;
+    background: var(--jb-surface) padding-box, linear-gradient(135deg, var(--jb-accent-1), var(--jb-accent-2)) border-box;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    color:var(--jb-text-2); font-weight:700; font-size:15px; cursor:pointer;
+  }
+  .subtab-btn.active { background: linear-gradient(135deg, var(--jb-accent-1), var(--jb-accent-2)); color:#fff; border-color:transparent; box-shadow: 0 4px 14px color-mix(in srgb, var(--jb-accent-1) 40%, transparent); }
+
+  /* ---------- Tarjetas de resultados (radio, podcast, episodios) ---------- */
+  .station-grid { display:flex; flex-direction:column; gap:10px; }
+  .station-card {
+    display:flex; align-items:center; gap:12px;
+    background: var(--jb-surface); border-radius: 16px;
+    border: 2px solid color-mix(in srgb, var(--jb-accent-1) 35%, transparent);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.03); padding: 12px; cursor:pointer;
+    animation: jbFadeSlideIn 400ms ease-out;
+    transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+  }
+  .station-card:hover { transform: scale(1.015); border-color: color-mix(in srgb, var(--jb-accent-1) 75%, transparent); }
+  .station-card:active { animation: jbPulse 300ms ease; }
+  .station-card.playing { border-color: var(--jb-accent-1); box-shadow: 0 0 18px color-mix(in srgb, var(--jb-accent-1) 35%, transparent); }
+
+  .station-icon {
+    position:relative; width: 46px; height:46px; border-radius: 12px; flex-shrink:0; overflow:hidden;
+    background: linear-gradient(135deg, var(--jb-accent-1), var(--jb-accent-2));
+    display:flex; align-items:center; justify-content:center; font-size:24px; color:#fff;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
+  }
+  .station-icon img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; background:#fff; }
+  .station-info { flex:1; min-width:0; }
+  .station-name { font-weight:700; font-size:18px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .station-meta { font-size:14.4px; color: var(--jb-text-2); display:flex; gap:8px; margin-top:2px; flex-wrap:wrap; }
+  .station-actions { display:flex; align-items:center; gap:6px; flex-shrink:0; }
+  .icon-btn {
+    width:38px; height:38px; border-radius:12px;
+    border: 2px solid transparent;
+    background: var(--jb-surface) padding-box, linear-gradient(135deg, var(--jb-accent-1), var(--jb-accent-2)) border-box;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.10);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:19.2px;
+    transition: transform 150ms ease, box-shadow 150ms ease;
+  }
+  .icon-btn:hover { transform: scale(1.1); box-shadow: 0 6px 14px color-mix(in srgb, var(--jb-accent-1) 30%, transparent); }
+  .icon-btn.fav-active { color: var(--jb-accent-1); }
+
+  .mini-eq { display:flex; align-items:flex-end; gap:2px; height:16px; width:16px; }
+  .mini-eq span { width:3px; background: var(--jb-accent-1); border-radius:1px; animation: jbEq 900ms ease-in-out infinite; }
+  .mini-eq span:nth-child(1){ height:40%; } .mini-eq span:nth-child(2){ height:100%; animation-delay:150ms; } .mini-eq span:nth-child(3){ height:65%; animation-delay:300ms; }
+
+  .empty-state { text-align:center; padding: 40px 16px; color: var(--jb-text-2); }
+  .empty-state .big { font-size:48px; margin-bottom:10px; }
+
+  .back-btn {
+    display:inline-flex; align-items:center; gap:6px; padding:9px 16px; margin-bottom:10px;
+    border-radius:999px; border:2px solid transparent;
+    background: var(--jb-surface) padding-box, linear-gradient(135deg, var(--jb-accent-1), var(--jb-accent-2)) border-box;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.09);
+    color: var(--jb-text); font-weight:700; font-size:15.6px; cursor:pointer;
+  }
+
+  .podcast-header {
+    display:flex; gap:12px; align-items:center; margin-bottom:14px; padding:12px;
+    background: var(--jb-surface); border-radius:16px;
+    border: 2px solid color-mix(in srgb, var(--jb-accent-1) 35%, transparent);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.10);
+  }
+  .podcast-header img { width:64px; height:64px; border-radius:14px; object-fit:cover; box-shadow: 0 6px 16px rgba(0,0,0,0.15); }
+  .podcast-header .ph-name { font-weight:800; font-size:19.2px; }
+  .podcast-header .ph-artist { font-size:15px; color:var(--jb-text-2); }
+
+  .episode-card { flex-direction:column; align-items:stretch; gap:0; cursor:default; padding:14px; }
+  .episode-header { display:flex; align-items:center; gap:12px; cursor:pointer; }
+  .episode-header-info { flex:1; min-width:0; }
+  .episode-title { font-weight:800; font-size:18.6px; line-height:1.3; }
+  .episode-datetime {
+    margin-top:6px; display:inline-flex; align-items:center; gap:5px; font-size:13.8px; font-weight:800;
+    color: var(--jb-accent-1); background: color-mix(in srgb, var(--jb-accent-1) 14%, transparent);
+    padding:4px 10px; border-radius:999px; letter-spacing:0.02em;
+  }
+  .episode-chevron { font-size:21.6px; color: var(--jb-text-2); transition: transform 220ms ease; flex-shrink:0; }
+  .episode-card.expanded .episode-chevron { transform: rotate(180deg); }
+  .episode-body { display:none; margin-top:14px; padding-top:14px; border-top:1px solid color-mix(in srgb, var(--jb-accent-1) 18%, transparent); flex-direction:column; gap:12px; }
+  .episode-card.expanded .episode-body { display:flex; }
+  .episode-desc { font-size:16.2px; color: var(--jb-text-2); line-height:1.55; max-height:180px; overflow-y:auto; }
+  .episode-play-btn {
+    align-self:flex-start; padding:11px 20px; border-radius:12px; border:none;
+    background: linear-gradient(135deg, var(--jb-accent-1), var(--jb-accent-2)); color:#fff; font-weight:800; font-size:16.8px;
+    cursor:pointer; display:flex; align-items:center; gap:7px;
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--jb-accent-1) 35%, transparent);
+  }
+  .episode-actions { display:flex; flex-wrap:wrap; gap:10px; }
+  .episode-dl-btn {
+    padding:11px 16px; border-radius:12px; border:2px solid transparent;
+    background: var(--jb-surface) padding-box, linear-gradient(135deg, var(--jb-accent-1), var(--jb-accent-2)) border-box;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    color: var(--jb-accent-1); font-weight:800; font-size:14.4px; cursor:pointer;
+  }
+  .episode-dl-btn.downloaded { color:#E1493B; background: var(--jb-surface) padding-box, linear-gradient(135deg, #E1493B, #FF8A6B) border-box; }
+  .episode-dl-btn:disabled { opacity:0.6; }
+
+  /* ---------- Mini barra inferior ---------- */
+  .player-bar {
+    position: fixed; left:0; right:0; bottom:0; z-index: 30;
+    background: color-mix(in srgb, var(--jb-surface) 92%, transparent);
+    backdrop-filter: blur(14px);
+    border-top: 1px solid color-mix(in srgb, var(--jb-accent-1) 30%, transparent);
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    transform: translateY(110%); transition: transform 300ms ease-out; cursor: pointer;
+  }
+  .player-bar.visible { transform: translateY(0); }
+  .player-inner { max-width:720px; margin:0 auto; display:flex; align-items:center; gap:12px; }
+  .visualizer { display:flex; align-items:center; gap:2px; height:32px; width:60px; flex-shrink:0; }
+  .visualizer span { flex:1; background: linear-gradient(180deg, var(--jb-accent-2), var(--jb-accent-1)); border-radius: 2px; height: 15%; transition: height 120ms ease; }
+  .now-info { flex:1; min-width:0; }
+  .now-name { font-weight:800; font-size:16.8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .now-status { font-size:13.2px; color: var(--jb-accent-1); text-transform:uppercase; letter-spacing:0.08em; display:flex; align-items:center; gap:5px; }
+  .live-dot { width:7px; height:7px; border-radius:50%; background: var(--jb-accent-1); animation: jbBlink 1.3s ease-in-out infinite; }
+  .play-btn {
+    width: 46px; height:46px; border-radius: 50%; border:none; flex-shrink:0;
+    background: linear-gradient(135deg, var(--jb-accent-1), var(--jb-accent-2)); color:#fff; font-size:21.6px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow: 0 0 16px color-mix(in srgb, var(--jb-accent-1) 45%, transparent); transition: transform 150ms ease;
+  }
+  .play-btn:active { transform: scale(0.92); }
+
+  /* ---------- Reproductor emergente ---------- */
+  .player-modal { position: fixed; inset:0; z-index: 50; display:none; align-items:center; justify-content:center; padding: 24px; }
+  .player-modal.open { display:flex; }
+  .modal-backdrop { position:absolute; inset:0; background: radial-gradient(circle at 50% 28%, #131c30 0%, #060911 65%, #030407 100%); animation: modalFadeIn 260ms ease; }
+  .modal-backdrop::before {
+    content:""; position:absolute; inset:0;
+    background-image: linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 28px 28px; mask-image: radial-gradient(circle at 50% 35%, black 0%, transparent 75%);
+  }
+  @keyframes modalFadeIn { from{opacity:0;} to{opacity:1;} }
+  .modal-content { position:relative; z-index:1; width:min(94vw, 380px); display:flex; flex-direction:column; align-items:center; gap:14px; animation: modalPopIn 420ms cubic-bezier(.22,1.15,.4,1); }
+  @keyframes modalPopIn { from { opacity:0; transform: scale(0.82) translateY(26px);} to {opacity:1; transform: scale(1) translateY(0);} }
+  .modal-topbar { width:100%; display:flex; justify-content:space-between; align-items:center; }
+  .modal-close { width:38px; height:38px; border-radius:50%; border:1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.06); color:#EDEFF5; font-size:21.6px; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+  .modal-tag { font-size:12.6px; letter-spacing:0.16em; text-transform:uppercase; color: var(--jb-accent-1); display:flex; align-items:center; gap:6px; }
+
+  .orb-wrap { position:relative; width:220px; height:220px; display:flex; align-items:center; justify-content:center; margin: 4px 0; }
+  .orb-ring { position:absolute; inset:0; border-radius:50%; background: conic-gradient(from 0deg, transparent 0%, var(--jb-accent-1) 18%, transparent 40%, var(--jb-accent-2) 62%, transparent 85%); filter: blur(1px); animation: orbSpin 3.2s linear infinite; opacity: 0.85; }
+  .orb-ring.paused { animation-play-state: paused; opacity:0.3; }
+  .orb-ring-2 { position:absolute; inset:14px; border-radius:50%; border: 1px dashed color-mix(in srgb, var(--jb-accent-1) 35%, transparent); animation: orbSpin 6s linear infinite reverse; }
+  @keyframes orbSpin { to { transform: rotate(360deg); } }
+  #radialCanvas { position:absolute; inset:0; z-index:1; }
+  .orb-core {
+    position:relative; z-index:2; width:124px; height:124px; border-radius:50%; overflow:hidden;
+    background: linear-gradient(135deg, var(--jb-accent-1), var(--jb-accent-2));
+    display:flex; align-items:center; justify-content:center; font-size:52.8px;
+    box-shadow: 0 0 46px color-mix(in srgb, var(--jb-accent-1) 65%, transparent), inset 0 0 26px rgba(255,255,255,0.28);
+  }
+  .orb-core img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+
+  .modal-name { font-size:24px; font-weight:800; text-align:center; line-height:1.25; background: linear-gradient(135deg, #fff, var(--jb-accent-2)); -webkit-background-clip:text; background-clip:text; color:transparent; padding: 0 8px; }
+  .modal-meta { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; font-size:13.8px; color:#8C96B3; text-transform:uppercase; letter-spacing:0.06em; }
+  .modal-meta span { display:flex; align-items:center; gap:5px; }
+  .modal-status { display:flex; align-items:center; gap:7px; font-size:15px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color: var(--jb-accent-1); }
+
+  .seek-row { display:none; align-items:center; gap:8px; width:100%; max-width:280px; }
+  .seek-row.show { display:flex; }
+  .seek-row .t { font-size:13.2px; color:#8C96B3; width:36px; text-align:center; flex-shrink:0; }
+  .seek-row input[type="range"] { flex:1; accent-color: var(--jb-accent-1); }
+
+  .modal-controls { display:flex; align-items:center; gap:20px; margin-top:2px; }
+  .modal-icon-btn {
+    width:46px; height:46px; border-radius:50%; border:1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.06); color:#EDEFF5; font-size:22.8px;
+    display:flex; align-items:center; justify-content:center; cursor:pointer; transition: transform 150ms ease, background 150ms ease;
+  }
+  .modal-icon-btn:hover { transform: scale(1.08); }
+  .modal-icon-btn.fav-active { color: var(--jb-accent-1); background: color-mix(in srgb, var(--jb-accent-1) 18%, rgba(255,255,255,0.06)); }
+
+  .timer-wrap { position:relative; }
+  .modal-timer-btn {
+    display:flex; align-items:center; gap:5px; height:38px; padding:0 12px; border-radius:999px;
+    border:1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.06); color:#EDEFF5;
+    font-size:15.6px; font-weight:700; cursor:pointer; white-space:nowrap;
+  }
+  .modal-timer-btn.active { color: var(--jb-accent-1); border-color: color-mix(in srgb, var(--jb-accent-1) 55%, transparent); background: color-mix(in srgb, var(--jb-accent-1) 15%, rgba(255,255,255,0.06)); }
+  .timer-menu {
+    display:none; position:absolute; top:calc(100% + 8px); right:0; z-index:5;
+    background:#141A2B; border:1px solid rgba(255,255,255,0.12); border-radius:14px; padding:6px; min-width:150px;
+    box-shadow: 0 14px 32px rgba(0,0,0,0.4);
+  }
+  .timer-menu.open { display:flex; flex-direction:column; gap:2px; }
+  .timer-opt { padding:9px 10px; border-radius:9px; border:none; background:transparent; color:#EDEFF5; font-size:15.6px; font-weight:700; text-align:left; cursor:pointer; }
+  .timer-opt:hover { background: rgba(255,255,255,0.08); }
+  .timer-opt.off { color:#FF6B5B; }
+  .sync-panel { padding:10px; min-width:230px; }
+  .sync-panel .sync-title { font-size:13.2px; color:#8C96B3; margin-bottom:8px; }
+  .sync-panel .sync-row { display:flex; align-items:center; gap:8px; }
+  .sync-panel input[type="range"] { flex:1; accent-color: var(--jb-accent-1); }
+  .sync-panel .sync-val { font-size:14.4px; color:#EDEFF5; width:42px; text-align:right; }
+  .sync-presets { display:flex; flex-wrap:wrap; gap:6px; margin-top:9px; }
+  .sync-presets button { flex:0 0 calc(33.333% - 4px); padding:7px 0; border-radius:8px; border:none; background:rgba(255,255,255,0.06); color:#EDEFF5; font-size:14.4px; font-weight:700; cursor:pointer; }
+  .sync-presets button.active { background: color-mix(in srgb, var(--jb-accent-1) 30%, rgba(255,255,255,0.06)); color: var(--jb-accent-1); }
+  .modal-play-btn {
+    width: 68px; height:68px; border-radius:50%; border:none; cursor:pointer;
+    background: linear-gradient(135deg, var(--jb-accent-1), var(--jb-accent-2)); color:#fff; font-size:30px;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow: 0 0 30px color-mix(in srgb, var(--jb-accent-1) 55%, transparent); transition: transform 150ms ease;
+  }
+  .modal-play-btn:active { transform: scale(0.92); }
+  .modal-bars { display:flex; align-items:flex-end; gap:3px; height:30px; width:100%; max-width:250px; }
+  .modal-bars span { flex:1; border-radius:2px; height:10%; background: linear-gradient(180deg, var(--jb-accent-2), var(--jb-accent-1)); transition: height 110ms ease; }
+
+  .loader { text-align:center; padding: 24px; color: var(--jb-text-2); font-size:16.8px; }
+  .loader .jb-mono { animation: jbBlink 1s ease-in-out infinite; }
+
+  .fallback-box {
+    text-align:center; padding:24px 16px; color:var(--jb-text-2); font-size:16.2px;
+    background: var(--jb-surface); border-radius:16px;
+    border: 2px solid color-mix(in srgb, var(--jb-accent-1) 30%, transparent);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.09);
+  }
+  .fallback-box a { display:inline-block; margin-top:10px; padding:10px 16px; border-radius:10px; text-decoration:none; font-weight:700; font-size:15.6px; background: linear-gradient(135deg, var(--jb-accent-1), var(--jb-accent-2)); color:#fff; }
+
+  footer.signature { text-align:center; padding: 18px 16px 4px; font-size:13.2px; color: var(--jb-text-2); letter-spacing: 0.08em; text-transform: uppercase; }
+  footer.signature b { background: linear-gradient(135deg, var(--jb-accent-1), var(--jb-accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  @keyframes jbFadeSlideIn { from { opacity:0; transform: translateY(16px);} to { opacity:1; transform: translateY(0);} }
+  @keyframes jbPulse { 0%{transform:scale(1);} 50%{transform:scale(0.97);} 100%{transform:scale(1);} }
+  @keyframes jbPulseGlow { 0%,100% { box-shadow: 0 0 10px color-mix(in srgb, var(--jb-accent-1) 45%, transparent);} 50% { box-shadow: 0 0 22px color-mix(in srgb, var(--jb-accent-1) 70%, transparent);} }
+  @keyframes jbEq { 0%,100%{ transform: scaleY(0.5);} 50%{ transform: scaleY(1);} }
+  @keyframes jbBlink { 0%,100%{ opacity:1;} 50%{ opacity:0.25;} }
+
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="jb-logo">
+    <div class="jb-logo-mark">📡</div>
+    <div>
+      <div class="jb-title">JB's Radio</div>
+      <div class="jb-subtitle jb-mono" id="statusLine">buscando señal...</div>
+    </div>
+  </div>
+  <div class="theme-picker" id="themePicker">
+    <button class="theme-toggle" id="themeToggle" type="button">
+      <span class="theme-toggle-swatch" id="themeToggleSwatch"></span>
+      <span class="theme-toggle-chevron">▾</span>
+    </button>
+    <div class="theme-dropdown" id="themeDropdown"></div>
+  </div>
+</header>
+
+<main>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tabRadio">📻 Radio</button>
+    <button class="tab-btn" id="tabPodcasts">🎙️ Podcasts</button>
+    <button class="tab-btn" id="tabFavoritos">⭐ Favoritas</button>
+  </div>
+
+  <!-- ---------- Panel Radio ---------- -->
+  <div class="jb-panel" id="radioPanel">
+    <input type="text" class="jb-input" id="searchInput" placeholder="Nombre de emisora, ciudad...">
+    <div style="text-align:right; margin-top:8px;">
+      <span class="manual-link jb-mono" id="manualAddLink">¿No la encuentras? Añadir manualmente →</span>
+    </div>
+    <div class="inline-form" id="manualForm">
+      <input type="text" class="jb-input" id="manualName" placeholder="Nombre (ej: COPE, COPE Deportes)">
+      <input type="text" class="jb-input" id="manualUrl" placeholder="URL del audio en directo (.mp3, .aac, .m3u8...)">
+      <div class="test-url-row">
+        <button type="button" class="btn-test" id="manualTestBtn">▶ Probar enlace</button>
+        <span class="test-status" id="manualTestStatus"></span>
+      </div>
+      <input type="text" class="jb-input" id="manualLogo" placeholder="URL del logo (opcional)">
+      <div class="hint">⚠️ Pega el enlace directo del audio, no la página del programa. Una URL como cope.es/programas/... es una <b>página web</b>, no un stream — no funcionará. Usa "Probar enlace" para comprobarlo antes de guardar. Consigue la URL real abriendo el reproductor en la web oficial y mirando la pestaña "Red/Network" del navegador (filtra por "Media") mientras le das a play.</div>
+      <div class="inline-form-row">
+        <button class="btn-cancel" id="manualCancel">Cancelar</button>
+        <button class="btn-save" id="manualSave">Guardar y reproducir</button>
+      </div>
+    </div>
+
+    <div class="section-label" id="countryLabel">País <span class="jb-mono" style="font-weight:400; opacity:0.6; text-transform:none; letter-spacing:0;">· mantén pulsado para editar</span></div>
+    <button type="button" class="back-country-pill" id="backCountryPill">
+      <span class="chevron">‹</span>
+      <span class="pill-icon" id="backCountryIcon">🌍</span>
+      <span class="pill-text"><div class="pill-label">País</div><div class="pill-value" id="backCountryValue">Todas</div></span>
+    </button>
+    <div class="country-row" id="countryChips"></div>
+
+    <div class="section-label" id="genreLabel">Género / temática</div>
+    <button type="button" class="back-country-pill" id="backGenrePill">
+      <span class="chevron">‹</span>
+      <span class="pill-icon" id="backGenreIcon">✨</span>
+      <span class="pill-text"><div class="pill-label">Género</div><div class="pill-value" id="backGenreValue">Todos</div></span>
+    </button>
+    <div class="genre-row" id="genreChips"></div>
+
+    <div class="inline-form" id="addChipForm">
+      <div class="chip-type-toggle" id="chipTypeToggle">
+        <button type="button" class="chip-type-btn active" data-type="country">🌍 País</button>
+        <button type="button" class="chip-type-btn" data-type="genre">🎶 Género</button>
+      </div>
+      <div class="hint" id="addChipHint">Toca una opción para añadirla. Puedes añadir varias.</div>
+      <div class="add-chip-list" id="addChipList"></div>
+      <div class="inline-form-row">
+        <button class="btn-save" id="addChipDone" style="flex:1;">Listo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------- Panel Podcasts ---------- -->
+  <div class="jb-panel" id="podcastPanel" style="display:none;">
+    <input type="text" class="jb-input" id="podcastSearchInput" placeholder="Buscar podcasts...">
+    <div class="subtabs">
+      <button class="subtab-btn active" id="subtabBuscarPodcast">Buscar</button>
+      <button class="subtab-btn" id="subtabSuscripciones">Suscripciones</button>
+      <button class="subtab-btn" id="subtabDescargas">⬇ Descargas</button>
+    </div>
+  </div>
+
+  <!-- ---------- Panel Favoritas ---------- -->
+  <div class="jb-panel" id="favPanel" style="display:none;">
+    <div class="subtabs">
+      <button class="subtab-btn active" id="subtabFavEmisoras">📻 Emisoras</button>
+      <button class="subtab-btn" id="subtabFavPodcasts">🎙️ Podcasts</button>
+    </div>
+  </div>
+
+  <div class="station-grid" id="resultGrid">
+    <div class="loader"><span class="jb-mono">// conectando con la red de radios</span></div>
+  </div>
+
+</main>
+
+<!-- Mini barra inferior -->
+<div class="player-bar" id="playerBar">
+  <div class="player-inner">
+    <div class="visualizer" id="visualizer">
+      <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <div class="now-info">
+      <div class="now-name" id="nowName">—</div>
+      <div class="now-status"><span class="live-dot" id="liveDot"></span><span id="nowStatus" class="jb-mono">EN VIVO</span></div>
+    </div>
+    <button class="play-btn" id="playBtn">⏸</button>
+  </div>
+</div>
+
+<!-- Reproductor emergente -->
+<div class="player-modal" id="playerModal">
+  <div class="modal-backdrop" id="modalBackdrop"></div>
+  <div class="modal-content">
+    <div class="modal-topbar">
+      <div class="modal-tag jb-mono" id="modalTag"><span class="live-dot" id="modalLiveDot"></span>REPRODUCIENDO</div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div class="timer-wrap">
+          <button class="modal-timer-btn" id="syncBtn" type="button">🔄</button>
+          <div class="timer-menu" id="syncMenu">
+            <div class="sync-panel">
+              <div class="sync-title jb-mono">RETRASO PARA SINCRONIZAR CON TV</div>
+              <div class="sync-row">
+                <input type="range" id="syncRange" min="0" max="120" step="0.5" value="0">
+                <span class="sync-val jb-mono" id="syncVal">0.0s</span>
+              </div>
+              <div class="sync-presets" id="syncPresets">
+                <button data-sync="0">0s</button>
+                <button data-sync="5">5s</button>
+                <button data-sync="15">15s</button>
+                <button data-sync="30">30s</button>
+                <button data-sync="60">1m</button>
+                <button data-sync="120">2m</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="timer-wrap">
+          <button class="modal-timer-btn" id="timerBtn" type="button">⏰</button>
+          <div class="timer-menu" id="timerMenu">
+            <button class="timer-opt" data-min="15">15 minutos</button>
+            <button class="timer-opt" data-min="30">30 minutos</button>
+            <button class="timer-opt" data-min="45">45 minutos</button>
+            <button class="timer-opt" data-min="60">60 minutos</button>
+            <button class="timer-opt off" data-min="0">Desactivar</button>
+          </div>
+        </div>
+        <button class="modal-close" id="modalClose">⌄</button>
+      </div>
+    </div>
+
+    <div class="orb-wrap">
+      <div class="orb-ring" id="orbRing"></div>
+      <div class="orb-ring-2"></div>
+      <canvas id="radialCanvas" width="220" height="220"></canvas>
+      <div class="orb-core" id="orbCore"><span id="orbEmoji">📻</span></div>
+    </div>
+
+    <div class="modal-name" id="modalName">—</div>
+    <div class="modal-meta jb-mono" id="modalMeta"></div>
+    <div class="modal-status" id="modalStatus">EN VIVO</div>
+
+    <div class="seek-row" id="seekRow">
+      <span class="t jb-mono" id="seekCurrent">0:00</span>
+      <input type="range" id="seekRange" min="0" max="100" value="0">
+      <span class="t jb-mono" id="seekDuration">0:00</span>
+    </div>
+
+    <div class="modal-bars" id="modalBars"></div>
+
+    <div class="modal-controls">
+      <button class="modal-icon-btn" id="modalFav">☆</button>
+      <button class="modal-play-btn" id="modalPlayBtn">⏸</button>
+      <button class="modal-icon-btn" id="modalCloseBtn">⌄</button>
+    </div>
+  </div>
+</div>
+
+<audio id="audioEl" crossorigin="anonymous" preload="none"></audio>
+
+<footer class="signature"><b>JB's Universe</b> · Design System v2</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  // ================= TEMA (desplegable) =================
+  const THEME_LIST = [
+    { id:"coral", label:"Coral" }, { id:"lavanda", label:"Lavanda" }, { id:"mint", label:"Mint" },
+    { id:"noche", label:"Noche 🌙" }, { id:"ocean", label:"Ocean" }, { id:"sage", label:"Sage" }, { id:"teal", label:"Teal" }
+  ];
+  const themeToggle = document.getElementById("themeToggle");
+  const themeToggleSwatch = document.getElementById("themeToggleSwatch");
+  const themeDropdown = document.getElementById("themeDropdown");
+
+  THEME_LIST.forEach(function (t) {
+    const opt = document.createElement("button");
+    opt.type = "button"; opt.className = "theme-option"; opt.dataset.theme = t.id;
+    opt.innerHTML = '<span class="swatch"></span><span>' + t.label + '</span>';
+    opt.addEventListener("click", function () { applyTheme(t.id); themeDropdown.classList.remove("open"); themeToggle.classList.remove("open"); });
+    themeDropdown.appendChild(opt);
+  });
+
+  themeToggle.addEventListener("click", function (e) {
+    e.stopPropagation();
+    themeDropdown.classList.toggle("open");
+    themeToggle.classList.toggle("open");
+  });
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest(".theme-picker")) { themeDropdown.classList.remove("open"); themeToggle.classList.remove("open"); }
+  });
+
+  function applyTheme(t) {
+    document.documentElement.setAttribute("data-jb-theme", t);
+    localStorage.setItem("jbradio_theme", t);
+    themeToggleSwatch.style.background = "linear-gradient(135deg, var(--jb-accent-1), var(--jb-accent-2))";
+    themeDropdown.querySelectorAll(".theme-option").forEach(function (o) { o.classList.toggle("active", o.dataset.theme === t); });
+  }
+  applyTheme(localStorage.getItem("jbradio_theme") || "mint");
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, function (c) { return ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" })[c]; });
+  }
+  function formatTime(sec) {
+    if (!isFinite(sec) || sec < 0) return "0:00";
+    const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+    return m + ":" + (s < 10 ? "0" : "") + s;
+  }
+
+  // ================= CHIPS: país y género (editables por el usuario) =================
+  // Catálogo de opciones reales que se ofrecen al crear un chip nuevo
+  const COUNTRY_CATALOG = [
+    { label: "España", value: "Spain", flag: "🇪🇸" },
+    { label: "Brasil", value: "Brazil", flag: "🇧🇷" },
+    { label: "México", value: "Mexico", flag: "🇲🇽" },
+    { label: "Rep. Dominicana", value: "Dominican Republic", flag: "🇩🇴" },
+    { label: "Argentina", value: "Argentina", flag: "🇦🇷" },
+    { label: "Colombia", value: "Colombia", flag: "🇨🇴" },
+    { label: "Chile", value: "Chile", flag: "🇨🇱" },
+    { label: "Perú", value: "Peru", flag: "🇵🇪" },
+    { label: "Venezuela", value: "Venezuela", flag: "🇻🇪" },
+    { label: "Uruguay", value: "Uruguay", flag: "🇺🇾" },
+    { label: "Paraguay", value: "Paraguay", flag: "🇵🇾" },
+    { label: "Ecuador", value: "Ecuador", flag: "🇪🇨" },
+    { label: "Bolivia", value: "Bolivia", flag: "🇧🇴" },
+    { label: "Panamá", value: "Panama", flag: "🇵🇦" },
+    { label: "Costa Rica", value: "Costa Rica", flag: "🇨🇷" },
+    { label: "Guatemala", value: "Guatemala", flag: "🇬🇹" },
+    { label: "Cuba", value: "Cuba", flag: "🇨🇺" },
+    { label: "Puerto Rico", value: "Puerto Rico", flag: "🇵🇷" },
+    { label: "Estados Unidos", value: "United States", flag: "🇺🇸" },
+    { label: "Portugal", value: "Portugal", flag: "🇵🇹" },
+    { label: "Italia", value: "Italy", flag: "🇮🇹" },
+    { label: "Francia", value: "France", flag: "🇫🇷" },
+    { label: "Alemania", value: "Germany", flag: "🇩🇪" },
+    { label: "Reino Unido", value: "United Kingdom", flag: "🇬🇧" },
+    { label: "Marruecos", value: "Morocco", flag: "🇲🇦" }
+  ];
+  const GENRE_CATALOG = [
+    { label: "Pop", value: "pop", icon: "🎵" },
+    { label: "Rock", value: "rock", icon: "🎸" },
+    { label: "Electrónica", value: "electronic", icon: "🎛️" },
+    { label: "House", value: "house", icon: "🏠" },
+    { label: "Techno", value: "techno", icon: "🌀" },
+    { label: "Trance", value: "trance", icon: "🌌" },
+    { label: "Reggaetón", value: "reggaeton", icon: "🔥" },
+    { label: "Trap", value: "trap", icon: "🕶️" },
+    { label: "Urbano", value: "urban", icon: "🏙️" },
+    { label: "Salsa", value: "salsa", icon: "💃" },
+    { label: "Bachata", value: "bachata", icon: "💞" },
+    { label: "Merengue", value: "merengue", icon: "🥁" },
+    { label: "Cumbia", value: "cumbia", icon: "🪗" },
+    { label: "Reggae", value: "reggae", icon: "🌿" },
+    { label: "Jazz", value: "jazz", icon: "🎷" },
+    { label: "Blues", value: "blues", icon: "🎺" },
+    { label: "Clásica", value: "classical", icon: "🎻" },
+    { label: "Ópera", value: "opera", icon: "🎭" },
+    { label: "Flamenco", value: "flamenco", icon: "👠" },
+    { label: "Folk", value: "folk", icon: "🪕" },
+    { label: "Gospel", value: "gospel", icon: "⛪" },
+    { label: "R&B", value: "rnb", icon: "💫" },
+    { label: "Hip Hop", value: "hip hop", icon: "🎤" },
+    { label: "Metal", value: "metal", icon: "🤘" },
+    { label: "Punk", value: "punk", icon: "🧷" },
+    { label: "Indie", value: "indie", icon: "🎨" },
+    { label: "K-Pop", value: "k-pop", icon: "✨" },
+    { label: "Oldies", value: "oldies", icon: "📻" },
+    { label: "Años 80", value: "80s", icon: "🕹️" },
+    { label: "Años 90", value: "90s", icon: "📼" },
+    { label: "Chill / Lo-fi", value: "chillout", icon: "🌙" },
+    { label: "Latina", value: "latin", icon: "🌎" },
+    { label: "Infantil", value: "kids", icon: "🧸" },
+    { label: "Humor", value: "comedy", icon: "😂" },
+    { label: "Cultura", value: "culture", icon: "📚" },
+    { label: "Religioso", value: "christian", icon: "✝️" },
+    { label: "Ciencia", value: "science", icon: "🔬" },
+    { label: "Economía", value: "business", icon: "💼" },
+    { label: "Deportes", value: "sport", icon: "🏆" },
+    { label: "Fútbol", value: "football", icon: "⚽" },
+    { label: "Baloncesto", value: "basketball", icon: "🏀" },
+    { label: "Motor / F1", value: "motor", icon: "🏎️" },
+    { label: "Tenis", value: "tennis", icon: "🎾" },
+    { label: "Noticias", value: "news", icon: "📰" },
+    { label: "Talk", value: "talk", icon: "🗣️" }
+  ];
+  // Chips que se muestran de entrada (el usuario puede borrarlos o añadir más)
+  const STARTER_COUNTRIES = ["Spain", "Brazil", "Mexico", "Dominican Republic"];
+  const STARTER_GENRES = ["pop", "rock", "electronic", "jazz", "classical", "latin", "sport", "news", "talk"];
+
+  function loadChipList(key, catalog, starterValues) {
+    try {
+      const stored = JSON.parse(localStorage.getItem(key));
+      if (stored) return stored;
+    } catch (e) {}
+    const seeded = catalog.filter(function (o) { return starterValues.indexOf(o.value) > -1; });
+    localStorage.setItem(key, JSON.stringify(seeded));
+    return seeded;
+  }
+  function saveChipList(key, list) { localStorage.setItem(key, JSON.stringify(list)); }
+
+  let countryChipsList = loadChipList("jbradio_countries_v2", COUNTRY_CATALOG, STARTER_COUNTRIES);
+  let genreChipsList = loadChipList("jbradio_genres_v2", GENRE_CATALOG, STARTER_GENRES);
+
+  const countryRow = document.getElementById("countryChips");
+  const genreRow = document.getElementById("genreChips");
+  const genreLabel = document.getElementById("genreLabel");
+
+  function renderCountryChips() {
+    countryRow.innerHTML = "";
+    const todas = document.createElement("button");
+    todas.className = "country-chip chip-fixed" + (currentCountry === "" ? " active" : "");
+    todas.dataset.country = ""; todas.dataset.label = "Todas";
+    todas.innerHTML = '<div class="icon-badge"><span>🌍</span></div><span class="country-label">Todas</span>';
+    countryRow.appendChild(todas);
+
+    countryChipsList.slice().sort(function (a, b) { return a.label.localeCompare(b.label, "es"); }).forEach(function (c) {
+      const btn = document.createElement("button");
+      btn.className = "country-chip" + (c.value === currentCountry ? " active" : "");
+      btn.dataset.country = c.value; btn.dataset.label = c.label;
+      btn.innerHTML = '<div class="icon-badge"><span>' + (c.flag || "🏳️") + '</span></div><span class="country-label">' + escapeHtml(c.label) + '</span>' +
+        '<button class="chip-del" data-del-country="' + escapeHtml(c.value) + '">×</button>';
+      countryRow.appendChild(btn);
+    });
+
+    const addBtn = document.createElement("button");
+    addBtn.className = "country-chip add-chip";
+    addBtn.id = "countryAddBtn";
+    addBtn.innerHTML = '<div class="icon-badge"><span>＋</span></div><span class="country-label">Agregar</span>';
+    countryRow.appendChild(addBtn);
+  }
+
+  function renderGenreChips() {
+    genreRow.innerHTML = "";
+    const todos = document.createElement("button");
+    todos.className = "genre-chip chip-fixed" + (currentTag === "" ? " active" : "");
+    todos.dataset.tag = ""; todos.dataset.label = "Todos"; todos.dataset.icon = "✨";
+    todos.innerHTML = '<span class="genre-icon-badge">✨</span> Todos';
+    genreRow.appendChild(todos);
+
+    genreChipsList.slice().sort(function (a, b) { return a.label.localeCompare(b.label, "es"); }).forEach(function (g) {
+      const btn = document.createElement("button");
+      btn.className = "genre-chip" + (g.value === currentTag ? " active" : "");
+      btn.dataset.tag = g.value; btn.dataset.label = g.label; btn.dataset.icon = g.icon || "🎶";
+      btn.innerHTML = '<span class="genre-icon-badge">' + (g.icon || "🎶") + '</span> ' + escapeHtml(g.label) +
+        ' <span class="genre-del" data-del-genre="' + escapeHtml(g.value) + '">×</span>';
+      genreRow.appendChild(btn);
+    });
+
+    const addBtn = document.createElement("button");
+    addBtn.className = "genre-chip add-chip";
+    addBtn.id = "genreAddBtn";
+    addBtn.innerHTML = "＋ Crear";
+    genreRow.appendChild(addBtn);
+  }
+
+  // ================= ESTADO =================
+  let mirrors = ["https://de1.api.radio-browser.info","https://de2.api.radio-browser.info","https://nl1.api.radio-browser.info","https://at1.api.radio-browser.info"];
+  let currentCountry = "";
+  let currentCountryLabel = "Todas";
+  let currentTag = "";
+  let currentQuery = "";
+  let currentTab = "radio";           // radio | podcasts | favoritos
+  let podcastSubtab = "buscar";       // buscar | suscripciones
+  let podcastView = "list";           // list | episodes
+  let currentPodcast = null;
+  let currentStation = null;
+  let playbackMode = "radio";         // radio | podcast
+  let searchDebounce = null;
+  let podcastDebounce = null;
+  let hasSearchedRadio = false;
+
+  renderCountryChips();
+  renderGenreChips();
+  genreRow.classList.add("show");
+
+  // ---------- Favoritos de radio ----------
+  const FAV_KEY = "jbradio_favorites";
+  function getFavorites() { try { return JSON.parse(localStorage.getItem(FAV_KEY)) || []; } catch (e) { return []; } }
+  function saveFavorites(list) { localStorage.setItem(FAV_KEY, JSON.stringify(list)); }
+  function isFavorite(uuid) { return getFavorites().some(function (s) { return s.stationuuid === uuid; }); }
+  function toggleFavorite(station) {
+    let list = getFavorites();
+    if (isFavorite(station.stationuuid)) list = list.filter(function (s) { return s.stationuuid !== station.stationuuid; });
+    else list.push(station);
+    saveFavorites(list);
+  }
+
+  // ---------- Suscripciones de podcasts ----------
+  const SUB_KEY = "jbradio_podcast_subs";
+  function getSubs() { try { return JSON.parse(localStorage.getItem(SUB_KEY)) || []; } catch (e) { return []; } }
+  function saveSubs(list) { localStorage.setItem(SUB_KEY, JSON.stringify(list)); }
+  function isSubscribed(id) { return getSubs().some(function (p) { return p.collectionId === id; }); }
+  function toggleSub(podcast) {
+    let list = getSubs();
+    if (isSubscribed(podcast.collectionId)) list = list.filter(function (p) { return p.collectionId !== podcast.collectionId; });
+    else list.push(podcast);
+    saveSubs(list);
+  }
+
+  // ================= DESCARGAS (IndexedDB) =================
+  const DL_DB_NAME = "jbradio_downloads", DL_STORE = "episodes";
+  function dlOpenDB() {
+    return new Promise(function (resolve, reject) {
+      const req = indexedDB.open(DL_DB_NAME, 1);
+      req.onupgradeneeded = function (e) {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains(DL_STORE)) db.createObjectStore(DL_STORE, { keyPath: "url" });
+      };
+      req.onsuccess = function (e) { resolve(e.target.result); };
+      req.onerror = function (e) { reject(e); };
+    });
+  }
+  async function dlSave(url, blob, meta) {
+    const db = await dlOpenDB();
+    return new Promise(function (resolve, reject) {
+      const tx = db.transaction(DL_STORE, "readwrite");
+      tx.objectStore(DL_STORE).put(Object.assign({ url: url, blob: blob, savedAt: Date.now() }, meta));
+      tx.oncomplete = function () { resolve(); };
+      tx.onerror = function (e) { reject(e); };
+    });
+  }
+  async function dlGet(url) {
+    const db = await dlOpenDB();
+    return new Promise(function (resolve, reject) {
+      const tx = db.transaction(DL_STORE, "readonly");
+      const req = tx.objectStore(DL_STORE).get(url);
+      req.onsuccess = function () { resolve(req.result || null); };
+      req.onerror = function (e) { reject(e); };
+    });
+  }
+  async function dlDelete(url) {
+    const db = await dlOpenDB();
+    return new Promise(function (resolve, reject) {
+      const tx = db.transaction(DL_STORE, "readwrite");
+      tx.objectStore(DL_STORE).delete(url);
+      tx.oncomplete = function () { resolve(); };
+      tx.onerror = function (e) { reject(e); };
+    });
+  }
+  async function dlListAll() {
+    const db = await dlOpenDB();
+    return new Promise(function (resolve, reject) {
+      const tx = db.transaction(DL_STORE, "readonly");
+      const req = tx.objectStore(DL_STORE).getAll();
+      req.onsuccess = function () { resolve(req.result || []); };
+      req.onerror = function (e) { reject(e); };
+    });
+  }
+
+  // ================= API RADIO =================
+  async function apiFetch(path) {
+    let lastErr = null;
+    for (const base of mirrors) {
+      try {
+        const res = await fetch(base + path, { headers: { "User-Agent": "JBsRadio/1.0" } });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return await res.json();
+      } catch (err) { lastErr = err; }
+    }
+    throw lastErr || new Error("Sin respuesta de los servidores");
+  }
+  function buildSearchPath(hideBroken) {
+    const params = new URLSearchParams();
+    params.set("limit", "40"); params.set("hidebroken", hideBroken ? "true" : "false"); params.set("order", "clickcount"); params.set("reverse", "true");
+    if (currentQuery) params.set("name", currentQuery);
+    if (currentCountry) params.set("country", currentCountry);
+    if (currentTag) params.set("tag", currentTag);
+    return "/json/stations/search?" + params.toString();
+  }
+
+  const statusLine = document.getElementById("statusLine");
+  const resultGrid = document.getElementById("resultGrid");
+
+  function iconFor(station) {
+    const tags = (station.tags || "").toLowerCase();
+    if (tags.includes("news") || tags.includes("noticias")) return "📰";
+    if (tags.includes("sport")) return "🏆";
+    if (tags.includes("classic") || tags.includes("clasica")) return "🎻";
+    if (tags.includes("rock")) return "🎸";
+    if (tags.includes("jazz")) return "🎷";
+    if (tags.includes("electro") || tags.includes("dance")) return "🎛️";
+    if (tags.includes("latin")) return "💃";
+    if (tags.includes("talk")) return "🗣️";
+    return "📻";
+  }
+
+  function stationIconHtml(fallbackEmoji, imgUrl) {
+    return '<div class="station-icon"><span>' + fallbackEmoji + '</span>' +
+      (imgUrl ? '<img src="' + escapeHtml(imgUrl) + '" alt="" onerror="this.remove()">' : '') + '</div>';
+  }
+
+  // ================= RENDER: RADIO =================
+  function renderStations(list) {
+    resultGrid.innerHTML = "";
+    if (!list.length) {
+      resultGrid.innerHTML = '<div class="empty-state"><div class="big">📡</div><div class="jb-mono">sin resultados · prueba otro filtro</div></div>';
+      return;
+    }
+    list.forEach(function (station) {
+      const card = document.createElement("div");
+      card.className = "station-card" + (currentStation && currentStation.stationuuid === station.stationuuid ? " playing" : "");
+      const fav = isFavorite(station.stationuuid);
+      const playing = currentStation && currentStation.stationuuid === station.stationuuid;
+      const unverified = station.lastcheckok === 0 || station.lastcheckok === "0";
+      card.innerHTML =
+        stationIconHtml(iconFor(station), station.favicon) +
+        '<div class="station-info">' +
+          '<div class="station-name">' + escapeHtml(station.name || "Sin nombre") + (unverified ? ' <span class="unverified-badge" title="Sin verificar, podría no reproducirse">⚠️</span>' : '') + '</div>' +
+          '<div class="station-meta jb-mono">' +
+            '<span>' + escapeHtml(station.countrycode || station.country || "") + '</span>' +
+            (station.bitrate ? '<span>' + station.bitrate + 'kbps</span>' : '') +
+            (station.codec ? '<span>' + escapeHtml(station.codec) + '</span>' : '') +
+          '</div></div>' +
+        '<div class="station-actions">' +
+          (playing ? '<div class="mini-eq"><span></span><span></span><span></span></div>' : '') +
+          '<button class="icon-btn fav-btn' + (fav ? ' fav-active' : '') + '" title="Favorita">' + (fav ? '★' : '☆') + '</button></div>';
+      card.addEventListener("click", function (e) { if (e.target.closest(".fav-btn")) return; playStation(station); });
+      card.querySelector(".fav-btn").addEventListener("click", function (e) {
+        e.stopPropagation(); toggleFavorite(station);
+        if (currentTab === "favoritos") renderFavoritesTab(); else renderStations(list);
+      });
+      resultGrid.appendChild(card);
+    });
+  }
+
+  async function runSearch() {
+    if (currentTab !== "radio") return;
+    if (!hasSearchedRadio) { showRadioPlaceholder(); return; }
+    statusLine.textContent = "buscando señal...";
+    resultGrid.innerHTML = '<div class="loader"><span class="jb-mono">// consultando red de radios</span></div>';
+    try {
+      let data = await apiFetch(buildSearchPath(true));
+      if (!data.length) {
+        // reintento incluyendo emisoras no verificadas por el chequeo automático
+        data = await apiFetch(buildSearchPath(false));
+      }
+      statusLine.textContent = data.length + " emisoras · " + currentCountryLabel;
+      renderStations(data);
+      if (!data.length) showManualPrompt();
+    } catch (err) {
+      statusLine.textContent = "sin conexión con la red";
+      resultGrid.innerHTML = '<div class="empty-state"><div class="big">⚠️</div><div class="jb-mono">no se pudo conectar · revisa tu red</div></div>';
+    }
+  }
+  function showRadioPlaceholder() {
+    statusLine.textContent = "elige un país o busca una emisora";
+    resultGrid.innerHTML = '<div class="empty-state"><div class="big">📡</div><div class="jb-mono">elige un país arriba o escribe el nombre de una emisora</div></div>';
+  }
+  function showManualPrompt() {
+    const box = document.createElement("div");
+    box.className = "empty-state";
+    box.innerHTML = '<div class="big">📡</div><div class="jb-mono">no está en la base de datos comunitaria</div>' +
+      '<div style="margin-top:10px;">Puedes <span class="manual-link" id="manualPromptLink">añadirla manualmente</span> con su enlace directo.</div>';
+    resultGrid.appendChild(box);
+    document.getElementById("manualPromptLink").addEventListener("click", function () { toggleForm(manualForm, true); });
+  }
+  function renderFavoritesTab() {
+    const favs = getFavorites();
+    statusLine.textContent = favs.length + " favoritas guardadas";
+    renderStations(favs);
+  }
+
+  // ================= RENDER: PODCASTS =================
+  function podcastCardHtml(p) {
+    const sub = isSubscribed(p.collectionId);
+    return '<div class="station-card" data-pid="' + p.collectionId + '">' +
+      '<div class="station-icon"><span>🎙️</span><img src="' + escapeHtml(p.artworkUrl100 || "") + '" alt="" onerror="this.remove()"></div>' +
+      '<div class="station-info">' +
+        '<div class="station-name">' + escapeHtml(p.trackName || "Sin nombre") + '</div>' +
+        '<div class="station-meta jb-mono"><span>' + escapeHtml(p.artistName || "") + '</span></div>' +
+      '</div>' +
+      '<div class="station-actions"><button class="icon-btn sub-btn' + (sub ? ' fav-active' : '') + '" title="Suscribirse">' + (sub ? '★' : '☆') + '</button></div>' +
+    '</div>';
+  }
+
+  function renderPodcastList(list) {
+    resultGrid.innerHTML = "";
+    if (!list.length) {
+      resultGrid.innerHTML = '<div class="empty-state"><div class="big">🎙️</div><div class="jb-mono">sin resultados</div></div>';
+      return;
+    }
+    list.forEach(function (p) {
+      const wrap = document.createElement("div");
+      wrap.innerHTML = podcastCardHtml(p);
+      const card = wrap.firstElementChild;
+      card.addEventListener("click", function (e) {
+        if (e.target.closest(".sub-btn")) return;
+        openPodcast(p);
+      });
+      card.querySelector(".sub-btn").addEventListener("click", function (e) {
+        e.stopPropagation(); toggleSub(p);
+        if (currentTab === "favoritos" || podcastSubtab === "suscripciones") renderSubscriptions(); else renderPodcastList(list);
+      });
+      resultGrid.appendChild(card);
+    });
+  }
+
+  async function searchPodcasts(query) {
+    statusLine.textContent = "buscando podcasts...";
+    resultGrid.innerHTML = '<div class="loader"><span class="jb-mono">// consultando directorio de podcasts</span></div>';
+    try {
+      const url = "https://itunes.apple.com/search?media=podcast&limit=25&term=" + encodeURIComponent(query);
+      const data = await jsonpFetch(url);
+      statusLine.textContent = (data.results || []).length + " podcasts encontrados";
+      renderPodcastList(data.results || []);
+    } catch (err) {
+      statusLine.textContent = "sin conexión con la red";
+      resultGrid.innerHTML = '<div class="empty-state"><div class="big">⚠️</div><div class="jb-mono">no se pudo conectar</div></div>';
+    }
+  }
+
+  // El buscador de podcasts (iTunes) no admite peticiones fetch normales desde el navegador,
+  // pero sí su propio mecanismo JSONP recomendado para búsquedas del lado del cliente.
+  function jsonpFetch(url) {
+    return new Promise(function (resolve, reject) {
+      const cbName = "jbradio_cb_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
+      const timeout = setTimeout(function () { cleanup(); reject(new Error("timeout")); }, 8000);
+      function cleanup() { delete window[cbName]; if (script.parentNode) script.parentNode.removeChild(script); clearTimeout(timeout); }
+      window[cbName] = function (data) { cleanup(); resolve(data); };
+      const script = document.createElement("script");
+      script.src = url + (url.indexOf("?") > -1 ? "&" : "?") + "callback=" + cbName;
+      script.onerror = function () { cleanup(); reject(new Error("jsonp error")); };
+      document.body.appendChild(script);
+    });
+  }
+  function renderSubscriptions() {
+    const subs = getSubs();
+    statusLine.textContent = subs.length + " podcasts suscritos";
+    renderPodcastList(subs);
+  }
+
+  async function openPodcast(podcast) {
+    currentPodcast = podcast;
+    podcastView = "episodes";
+    statusLine.textContent = "cargando episodios...";
+    resultGrid.innerHTML =
+      '<button class="back-btn" id="backToPodcasts">← Volver</button>' +
+      '<div class="podcast-header"><img src="' + escapeHtml(podcast.artworkUrl600 || podcast.artworkUrl100 || "") + '" alt="">' +
+        '<div><div class="ph-name">' + escapeHtml(podcast.trackName || "") + '</div><div class="ph-artist">' + escapeHtml(podcast.artistName || "") + '</div></div></div>' +
+      '<div class="loader"><span class="jb-mono">// leyendo episodios del feed</span></div>';
+    document.getElementById("backToPodcasts").addEventListener("click", backToPodcastList);
+
+    if (!podcast.feedUrl) { showEpisodeFallback(podcast); return; }
+    try {
+      const res = await fetch(podcast.feedUrl);
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const text = await res.text();
+      const xml = new DOMParser().parseFromString(text, "application/xml");
+      if (xml.querySelector("parsererror")) throw new Error("XML inválido");
+      const items = Array.from(xml.querySelectorAll("item")).slice(0, 30).map(function (item) {
+        const enclosure = item.querySelector("enclosure");
+        const rawDesc = (item.querySelector("description") || {}).textContent || "";
+        return {
+          title: (item.querySelector("title") || {}).textContent || "Episodio",
+          pubDate: (item.querySelector("pubDate") || {}).textContent || "",
+          url: enclosure ? enclosure.getAttribute("url") : "",
+          desc: rawDesc.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 600)
+        };
+      }).filter(function (ep) { return ep.url; });
+      statusLine.textContent = items.length + " episodios";
+      renderEpisodes(items, podcast);
+    } catch (err) {
+      showEpisodeFallback(podcast);
+    }
+  }
+
+  function showEpisodeFallback(podcast) {
+    statusLine.textContent = "no se pudo leer el feed";
+    const existingLoader = resultGrid.querySelector(".loader");
+    if (existingLoader) existingLoader.remove();
+    const box = document.createElement("div");
+    box.className = "fallback-box";
+    box.innerHTML =
+      'Este podcast no permite cargar sus episodios directamente aquí (restricción del servidor de origen).<br>' +
+      (podcast.trackViewUrl ? '<a href="' + escapeHtml(podcast.trackViewUrl) + '" target="_blank" rel="noopener">Abrir podcast</a>' : '');
+    resultGrid.appendChild(box);
+  }
+
+  async function renderEpisodes(items, podcast) {
+    const existingLoader = resultGrid.querySelector(".loader");
+    if (existingLoader) existingLoader.remove();
+    if (!items.length) {
+      const empty = document.createElement("div");
+      empty.className = "empty-state";
+      empty.innerHTML = '<div class="big">🎧</div><div class="jb-mono">no se encontraron episodios reproducibles</div>';
+      resultGrid.appendChild(empty);
+      return;
+    }
+    for (const ep of items) {
+      const card = document.createElement("div");
+      card.className = "station-card episode-card";
+      const playing = currentStation && playbackMode === "podcast" && currentStation.url_resolved === ep.url;
+      let dateLabel = "";
+      if (ep.pubDate) {
+        const d = new Date(ep.pubDate);
+        if (!isNaN(d)) {
+          const datePart = d.toLocaleDateString("es-ES", { day: "2-digit", month: "short", year: "numeric" });
+          const timePart = d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+          dateLabel = datePart + " · " + timePart;
+        }
+      }
+      let downloaded = false;
+      try { downloaded = !!(await dlGet(ep.url)); } catch (e) {}
+      card.innerHTML =
+        '<div class="episode-header">' +
+          '<div class="station-icon"><span>🎧</span><img src="' + escapeHtml(podcast.artworkUrl100 || "") + '" alt="" onerror="this.remove()"></div>' +
+          '<div class="episode-header-info">' +
+            '<div class="episode-title">' + escapeHtml(ep.title) + (downloaded ? ' <span title="Descargado">⬇️</span>' : '') + '</div>' +
+            (dateLabel ? '<div class="episode-datetime jb-mono">📅 ' + escapeHtml(dateLabel) + '</div>' : '') +
+          '</div>' +
+          (playing ? '<div class="mini-eq"><span></span><span></span><span></span></div>' : '') +
+          '<div class="episode-chevron">▾</div>' +
+        '</div>' +
+        '<div class="episode-body">' +
+          (ep.desc ? '<div class="episode-desc">' + escapeHtml(ep.desc) + (ep.desc.length >= 600 ? '…' : '') + '</div>' : '') +
+          '<div class="episode-actions">' +
+            '<button class="episode-play-btn">▶ Reproducir episodio</button>' +
+            '<button class="episode-dl-btn' + (downloaded ? ' downloaded' : '') + '">' + (downloaded ? '🗑 Quitar descarga' : '⬇ Descargar') + '</button>' +
+          '</div>' +
+        '</div>';
+      card.querySelector(".episode-header").addEventListener("click", function () { card.classList.toggle("expanded"); });
+      card.querySelector(".episode-play-btn").addEventListener("click", function (e) { e.stopPropagation(); playEpisode(ep, podcast); });
+      card.querySelector(".episode-dl-btn").addEventListener("click", function (e) {
+        e.stopPropagation();
+        toggleEpisodeDownload(ep, podcast, e.currentTarget);
+      });
+      resultGrid.appendChild(card);
+    }
+  }
+
+  async function toggleEpisodeDownload(ep, podcast, btn) {
+    const existing = await dlGet(ep.url).catch(function () { return null; });
+    if (existing) {
+      await dlDelete(ep.url).catch(function () {});
+      btn.textContent = "⬇ Descargar"; btn.classList.remove("downloaded");
+      return;
+    }
+    btn.textContent = "⏳ Descargando..."; btn.disabled = true;
+    try {
+      const res = await fetch(ep.url);
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const blob = await res.blob();
+      await dlSave(ep.url, blob, {
+        title: ep.title, podcastName: podcast.trackName || "", artwork: podcast.artworkUrl100 || "", pubDate: ep.pubDate || ""
+      });
+      btn.textContent = "🗑 Quitar descarga"; btn.classList.add("downloaded");
+    } catch (err) {
+      btn.textContent = "❌ Error, reintentar";
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  function backToPodcastList() {
+    podcastView = "list";
+    if (currentTab === "favoritos" || podcastSubtab === "suscripciones") renderSubscriptions();
+    else searchPodcasts(document.getElementById("podcastSearchInput").value.trim() || "noticias");
+  }
+
+  // ================= TABS PRINCIPALES =================
+  const tabRadio = document.getElementById("tabRadio");
+  const tabPodcasts = document.getElementById("tabPodcasts");
+  const tabFavoritos = document.getElementById("tabFavoritos");
+  const radioPanel = document.getElementById("radioPanel");
+  const podcastPanel = document.getElementById("podcastPanel");
+  const favPanel = document.getElementById("favPanel");
+  let favSubtab = "emisoras"; // emisoras | podcasts
+
+  function setActiveTab(tab) {
+    currentTab = tab;
+    tabRadio.classList.toggle("active", tab === "radio");
+    tabPodcasts.classList.toggle("active", tab === "podcasts");
+    tabFavoritos.classList.toggle("active", tab === "favoritos");
+    radioPanel.style.display = tab === "radio" ? "" : "none";
+    podcastPanel.style.display = tab === "podcasts" ? "" : "none";
+    favPanel.style.display = tab === "favoritos" ? "" : "none";
+  }
+  tabRadio.addEventListener("click", function () { setActiveTab("radio"); runSearch(); });
+  tabFavoritos.addEventListener("click", function () {
+    setActiveTab("favoritos");
+    if (favSubtab === "podcasts") renderSubscriptions(); else renderFavoritesTab();
+  });
+  tabPodcasts.addEventListener("click", function () {
+    setActiveTab("podcasts"); podcastView = "list";
+    if (podcastSubtab === "suscripciones") renderSubscriptions();
+    else if (podcastSubtab === "descargas") renderDownloadsTab();
+    else searchPodcasts(document.getElementById("podcastSearchInput").value.trim() || "noticias");
+  });
+
+  const subtabFavEmisoras = document.getElementById("subtabFavEmisoras");
+  const subtabFavPodcasts = document.getElementById("subtabFavPodcasts");
+  subtabFavEmisoras.addEventListener("click", function () {
+    favSubtab = "emisoras";
+    subtabFavEmisoras.classList.add("active"); subtabFavPodcasts.classList.remove("active");
+    renderFavoritesTab();
+  });
+  subtabFavPodcasts.addEventListener("click", function () {
+    favSubtab = "podcasts";
+    subtabFavPodcasts.classList.add("active"); subtabFavEmisoras.classList.remove("active");
+    renderSubscriptions();
+  });
+
+  const subtabBuscarPodcast = document.getElementById("subtabBuscarPodcast");
+  const subtabSuscripciones = document.getElementById("subtabSuscripciones");
+  const subtabDescargas = document.getElementById("subtabDescargas");
+  function setPodcastSubtab(btn) {
+    [subtabBuscarPodcast, subtabSuscripciones, subtabDescargas].forEach(function (b) { b.classList.toggle("active", b === btn); });
+  }
+  subtabBuscarPodcast.addEventListener("click", function () {
+    podcastSubtab = "buscar"; podcastView = "list";
+    setPodcastSubtab(subtabBuscarPodcast);
+    searchPodcasts(document.getElementById("podcastSearchInput").value.trim() || "noticias");
+  });
+  subtabSuscripciones.addEventListener("click", function () {
+    podcastSubtab = "suscripciones"; podcastView = "list";
+    setPodcastSubtab(subtabSuscripciones);
+    renderSubscriptions();
+  });
+  subtabDescargas.addEventListener("click", function () {
+    podcastSubtab = "descargas"; podcastView = "list";
+    setPodcastSubtab(subtabDescargas);
+    renderDownloadsTab();
+  });
+
+  async function renderDownloadsTab() {
+    statusLine.textContent = "cargando descargas...";
+    resultGrid.innerHTML = '<div class="loader"><span class="jb-mono">// leyendo descargas guardadas</span></div>';
+    const list = await dlListAll().catch(function () { return []; });
+    list.sort(function (a, b) { return b.savedAt - a.savedAt; });
+    statusLine.textContent = list.length + " episodios descargados";
+    resultGrid.innerHTML = "";
+    if (!list.length) {
+      resultGrid.innerHTML = '<div class="empty-state"><div class="big">⬇</div><div class="jb-mono">aún no descargaste episodios</div></div>';
+      return;
+    }
+    list.forEach(function (item) {
+      const card = document.createElement("div");
+      card.className = "station-card episode-card";
+      card.innerHTML =
+        '<div class="episode-header">' +
+          '<div class="station-icon"><span>🎧</span><img src="' + escapeHtml(item.artwork || "") + '" alt="" onerror="this.remove()"></div>' +
+          '<div class="episode-header-info"><div class="episode-title">' + escapeHtml(item.title) + '</div>' +
+          '<div class="episode-datetime jb-mono">⬇ ' + escapeHtml(item.podcastName || "") + '</div></div>' +
+          '<div class="episode-chevron" style="visibility:hidden;">▾</div>' +
+        '</div>' +
+        '<div class="episode-body" style="display:flex;">' +
+          '<div class="episode-actions">' +
+            '<button class="episode-play-btn">▶ Reproducir (sin conexión)</button>' +
+            '<button class="episode-dl-btn downloaded">🗑 Eliminar</button>' +
+          '</div>' +
+        '</div>';
+      card.querySelector(".episode-play-btn").addEventListener("click", function () {
+        const objectUrl = URL.createObjectURL(item.blob);
+        playMedia({ name: item.title, url_resolved: objectUrl, favicon: item.artwork }, "podcast", { trackName: item.podcastName });
+      });
+      card.querySelector(".episode-dl-btn").addEventListener("click", async function () {
+        await dlDelete(item.url).catch(function () {});
+        renderDownloadsTab();
+      });
+      resultGrid.appendChild(card);
+    });
+  }
+
+  // ================= FILTROS RADIO: texto ================
+  document.getElementById("searchInput").addEventListener("input", function (e) {
+    currentQuery = e.target.value.trim();
+    hasSearchedRadio = true;
+    clearTimeout(searchDebounce); searchDebounce = setTimeout(runSearch, 450);
+  });
+  document.getElementById("podcastSearchInput").addEventListener("input", function (e) {
+    const q = e.target.value.trim();
+    clearTimeout(podcastDebounce);
+    podcastDebounce = setTimeout(function () { searchPodcasts(q || "noticias"); }, 500);
+  });
+
+  // ================= FILTROS RADIO: país y género (delegación + cascada) ================
+  const countryLabelEl = document.getElementById("countryLabel");
+  const backCountryPill = document.getElementById("backCountryPill");
+  const backCountryIcon = document.getElementById("backCountryIcon");
+  const backCountryValue = document.getElementById("backCountryValue");
+  const backGenrePill = document.getElementById("backGenrePill");
+  const backGenreIcon = document.getElementById("backGenreIcon");
+  const backGenreValue = document.getElementById("backGenreValue");
+
+  // ---------- Edición oculta: pulsación larga para mostrar los "×" ----------
+  function enableLongPressEdit(row) {
+    let pressTimer = null;
+    let startX = 0, startY = 0, longPressFired = false;
+    function start(e) {
+      const chip = e.target.closest(".country-chip, .genre-chip");
+      if (!chip || chip.classList.contains("add-chip") || chip.classList.contains("chip-fixed")) return;
+      const pt = e.touches ? e.touches[0] : e;
+      startX = pt.clientX; startY = pt.clientY;
+      longPressFired = false;
+      pressTimer = setTimeout(function () {
+        longPressFired = true;
+        row.classList.add("edit-mode");
+        if (navigator.vibrate) navigator.vibrate(15);
+      }, 550);
+    }
+    function move(e) {
+      if (!pressTimer) return;
+      const pt = e.touches ? e.touches[0] : e;
+      if (Math.abs(pt.clientX - startX) > 10 || Math.abs(pt.clientY - startY) > 10) {
+        clearTimeout(pressTimer); pressTimer = null;
+      }
+    }
+    function end() { if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; } }
+    row.addEventListener("touchstart", start, { passive: true });
+    row.addEventListener("touchmove", move, { passive: true });
+    row.addEventListener("touchend", end);
+    row.addEventListener("mousedown", start);
+    row.addEventListener("mousemove", move);
+    row.addEventListener("mouseup", end);
+    row.addEventListener("mouseleave", end);
+    row.addEventListener("click", function (e) {
+      if (longPressFired) { e.stopPropagation(); e.preventDefault(); longPressFired = false; }
+    }, true);
+  }
+  enableLongPressEdit(countryRow);
+  enableLongPressEdit(genreRow);
+  document.addEventListener("click", function (e) {
+    if (countryRow.classList.contains("edit-mode") && !e.target.closest("#countryChips")) countryRow.classList.remove("edit-mode");
+    if (genreRow.classList.contains("edit-mode") && !e.target.closest("#genreChips")) genreRow.classList.remove("edit-mode");
+  });
+
+  function enterGenreCascade(icon, label) {
+    genreRow.style.display = "none";
+    backGenreIcon.textContent = icon || "✨";
+    backGenreValue.textContent = label;
+    backGenrePill.classList.add("show");
+  }
+  function exitGenreCascade() {
+    genreRow.style.display = "";
+    backGenrePill.classList.remove("show");
+  }
+  backGenrePill.addEventListener("click", exitGenreCascade);
+
+  function enterCountryCascade(flag, label) {
+    countryRow.style.display = "none";
+    countryLabelEl.style.display = "none";
+    backCountryIcon.textContent = flag || "🌍";
+    backCountryValue.textContent = label;
+    backCountryPill.classList.add("show");
+  }
+  function exitCountryCascade() {
+    countryRow.style.display = ""; countryLabelEl.style.display = "";
+    backCountryPill.classList.remove("show");
+  }
+  backCountryPill.addEventListener("click", exitCountryCascade);
+
+  countryRow.addEventListener("click", function (e) {
+    const del = e.target.closest("[data-del-country]");
+    if (del) {
+      e.stopPropagation();
+      const val = del.dataset.delCountry;
+      countryChipsList = countryChipsList.filter(function (c) { return c.value !== val; });
+      saveChipList("jbradio_countries_v2", countryChipsList);
+      if (currentCountry === val) { currentCountry = ""; currentCountryLabel = "Todas"; }
+      renderCountryChips(); hasSearchedRadio = true; runSearch();
+      return;
+    }
+    if (countryRow.classList.contains("edit-mode")) { countryRow.classList.remove("edit-mode"); return; }
+    if (e.target.closest("#countryAddBtn")) { openAddChipForm("country"); return; }
+    const chip = e.target.closest(".country-chip");
+    if (!chip || chip.classList.contains("add-chip")) return;
+    currentCountry = chip.dataset.country; currentCountryLabel = chip.dataset.label;
+    currentTag = "";
+    renderCountryChips();
+    renderGenreChips();
+    exitGenreCascade();
+    const flagSpan = chip.querySelector(".icon-badge span");
+    enterCountryCascade(flagSpan ? flagSpan.textContent : "🌍", currentCountryLabel);
+    hasSearchedRadio = true;
+    runSearch();
+  });
+
+  genreRow.addEventListener("click", function (e) {
+    const del = e.target.closest("[data-del-genre]");
+    if (del) {
+      e.stopPropagation();
+      const val = del.dataset.delGenre;
+      genreChipsList = genreChipsList.filter(function (g) { return g.value !== val; });
+      saveChipList("jbradio_genres_v2", genreChipsList);
+      if (currentTag === val) currentTag = "";
+      renderGenreChips(); hasSearchedRadio = true; runSearch();
+      return;
+    }
+    if (genreRow.classList.contains("edit-mode")) { genreRow.classList.remove("edit-mode"); return; }
+    if (e.target.closest("#genreAddBtn")) { openAddChipForm("genre"); return; }
+    const chip = e.target.closest(".genre-chip");
+    if (!chip || chip.classList.contains("add-chip")) return;
+    currentTag = chip.dataset.tag;
+    renderGenreChips();
+    enterGenreCascade(chip.dataset.icon || "✨", chip.dataset.label || "Todos");
+    hasSearchedRadio = true;
+    runSearch();
+  });
+
+  // ---------- Formulario unificado de creación de chips ----------
+  const addChipForm = document.getElementById("addChipForm");
+  const chipTypeToggle = document.getElementById("chipTypeToggle");
+  const addChipList = document.getElementById("addChipList");
+  const addChipHint = document.getElementById("addChipHint");
+  function toggleForm(form, show) { form.classList.toggle("show", show); }
+  let addChipType = "country";
+
+  function addChipOptionClicked(value) {
+    const catalog = addChipType === "country" ? COUNTRY_CATALOG : GENRE_CATALOG;
+    let found = null;
+    for (let i = 0; i < catalog.length; i++) { if (catalog[i].value === value) { found = catalog[i]; break; } }
+    if (!found) return;
+    if (addChipType === "country") {
+      countryChipsList.push(found);
+      saveChipList("jbradio_countries_v2", countryChipsList);
+      renderCountryChips();
+    } else {
+      genreChipsList.push(found);
+      saveChipList("jbradio_genres_v2", genreChipsList);
+      renderGenreChips();
+    }
+    populateAddChipList();
+  }
+
+  // Delegación: un único listener en el contenedor (más fiable que uno por botón)
+  addChipList.addEventListener("click", function (e) {
+    const btn = e.target.closest(".add-chip-option");
+    if (!btn) return;
+    const value = btn.getAttribute("data-value");
+    if (!value) return;
+    addChipOptionClicked(value);
+  });
+
+  function populateAddChipList() {
+    const catalog = addChipType === "country" ? COUNTRY_CATALOG : GENRE_CATALOG;
+    const currentList = addChipType === "country" ? countryChipsList : genreChipsList;
+    const existingValues = currentList.map(function (c) { return c.value; });
+    const available = catalog.filter(function (o) { return existingValues.indexOf(o.value) === -1; })
+      .sort(function (a, b) { return a.label.localeCompare(b.label, "es"); });
+    addChipHint.textContent = addChipType === "country"
+      ? "Toca un país para añadirlo. Puedes añadir varios."
+      : "Toca un género o temática para añadirlo. Puedes añadir varios.";
+    addChipList.innerHTML = "";
+    if (!available.length) {
+      const empty = document.createElement("div");
+      empty.className = "add-chip-empty";
+      empty.textContent = "Ya agregaste todas las opciones disponibles.";
+      addChipList.appendChild(empty);
+      return;
+    }
+    const frag = document.createDocumentFragment();
+    available.forEach(function (o) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "add-chip-option";
+      btn.setAttribute("data-value", o.value);
+      btn.innerHTML = '<span class="opt-icon">' + (o.flag || o.icon || "🏷️") + '</span><span>' + escapeHtml(o.label) + '</span>';
+      frag.appendChild(btn);
+    });
+    addChipList.appendChild(frag);
+  }
+
+  function openAddChipForm(type) {
+    addChipType = type;
+    chipTypeToggle.querySelectorAll(".chip-type-btn").forEach(function (b) { b.classList.toggle("active", b.dataset.type === type); });
+    populateAddChipList();
+    toggleForm(addChipForm, true);
+    addChipForm.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  chipTypeToggle.addEventListener("click", function (e) {
+    const btn = e.target.closest(".chip-type-btn"); if (!btn) return;
+    addChipType = btn.dataset.type;
+    chipTypeToggle.querySelectorAll(".chip-type-btn").forEach(function (b) { b.classList.toggle("active", b === btn); });
+    populateAddChipList();
+  });
+
+  document.getElementById("addChipDone").addEventListener("click", function () { toggleForm(addChipForm, false); });
+
+  const manualForm = document.getElementById("manualForm");
+  document.getElementById("manualAddLink").addEventListener("click", function () { toggleForm(manualForm, !manualForm.classList.contains("show")); });
+  document.getElementById("manualCancel").addEventListener("click", function () { toggleForm(manualForm, false); });
+
+  // ---------- Probar si la URL pegada es realmente un stream de audio ----------
+  let manualTestAudio = null, manualTestTimeout = null;
+  document.getElementById("manualTestBtn").addEventListener("click", function () {
+    const url = document.getElementById("manualUrl").value.trim();
+    const statusEl = document.getElementById("manualTestStatus");
+    if (!url) { statusEl.textContent = "Escribe una URL primero."; statusEl.className = "test-status warn"; return; }
+    if (manualTestAudio) { manualTestAudio.src = ""; manualTestAudio = null; }
+    if (manualTestTimeout) clearTimeout(manualTestTimeout);
+    statusEl.textContent = "⏳ Probando..."; statusEl.className = "test-status testing";
+    const testAudio = new Audio();
+    manualTestAudio = testAudio;
+    let done = false;
+    function finish(cls, text) {
+      if (done) return; done = true;
+      clearTimeout(manualTestTimeout);
+      statusEl.textContent = text; statusEl.className = "test-status " + cls;
+      testAudio.pause(); testAudio.src = "";
+    }
+    manualTestTimeout = setTimeout(function () { finish("warn", "⚠️ Tarda en responder (puede ser un stream lento, o no ser válido)"); }, 8000);
+    testAudio.addEventListener("canplay", function () { finish("ok", "✅ Es audio válido — puedes guardarlo"); });
+    testAudio.addEventListener("error", function () { finish("bad", "❌ No es un stream de audio (¿pegaste la URL de una página web?)"); });
+    testAudio.src = url;
+    testAudio.load();
+  });
+
+  document.getElementById("manualSave").addEventListener("click", function () {
+    const name = document.getElementById("manualName").value.trim();
+    const url = document.getElementById("manualUrl").value.trim();
+    const logo = document.getElementById("manualLogo").value.trim();
+    if (!name || !url) return;
+    const station = {
+      stationuuid: "custom-" + Date.now(),
+      name: name, url_resolved: url, favicon: logo,
+      country: "Personalizada", countrycode: "", bitrate: null, codec: null, tags: ""
+    };
+    let favs = getFavorites(); favs.push(station); saveFavorites(favs);
+    document.getElementById("manualName").value = ""; document.getElementById("manualUrl").value = ""; document.getElementById("manualLogo").value = "";
+    document.getElementById("manualTestStatus").textContent = "";
+    toggleForm(manualForm, false);
+    hasSearchedRadio = true;
+    playStation(station);
+  });
+
+  // ================= REPRODUCTOR =================
+  const audioEl = document.getElementById("audioEl");
+  const playerBar = document.getElementById("playerBar");
+  const nowName = document.getElementById("nowName");
+  const nowStatus = document.getElementById("nowStatus");
+  const liveDot = document.getElementById("liveDot");
+  const playBtn = document.getElementById("playBtn");
+  const visualizerBars = document.querySelectorAll("#visualizer span");
+
+  const playerModal = document.getElementById("playerModal");
+  const modalTag = document.getElementById("modalTag");
+  const modalLiveDot = document.getElementById("modalLiveDot");
+  const modalName = document.getElementById("modalName");
+  const modalMeta = document.getElementById("modalMeta");
+  const modalStatus = document.getElementById("modalStatus");
+  const modalPlayBtn = document.getElementById("modalPlayBtn");
+  const modalFav = document.getElementById("modalFav");
+  const modalClose = document.getElementById("modalClose");
+  const modalCloseBtn = document.getElementById("modalCloseBtn");
+  const modalBackdrop = document.getElementById("modalBackdrop");
+  const orbRing = document.getElementById("orbRing");
+  const orbCore = document.getElementById("orbCore");
+  const orbEmoji = document.getElementById("orbEmoji");
+  const modalBarsWrap = document.getElementById("modalBars");
+  const radialCanvas = document.getElementById("radialCanvas");
+  const rctx = radialCanvas.getContext("2d");
+  const seekRow = document.getElementById("seekRow");
+  const seekRange = document.getElementById("seekRange");
+  const seekCurrent = document.getElementById("seekCurrent");
+  const seekDuration = document.getElementById("seekDuration");
+
+  const MODAL_BAR_COUNT = 26;
+  for (let i = 0; i < MODAL_BAR_COUNT; i++) modalBarsWrap.appendChild(document.createElement("span"));
+  const modalBars = modalBarsWrap.querySelectorAll("span");
+
+  let audioCtx = null, analyser = null, sourceNode = null, delayNode = null, rafId = null, isSeeking = false;
+  let syncDelaySeconds = Number(localStorage.getItem("jbradio_sync_delay") || 0);
+
+  function setupVisualizer() {
+    try {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        sourceNode = audioCtx.createMediaElementSource(audioEl);
+        delayNode = audioCtx.createDelay(130);
+        delayNode.delayTime.value = syncDelaySeconds;
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 64;
+        sourceNode.connect(delayNode);
+        delayNode.connect(analyser);
+        analyser.connect(audioCtx.destination);
+      }
+      if (audioCtx.state === "suspended") audioCtx.resume();
+      loopVisualizer(true);
+    } catch (err) { loopVisualizer(false); }
+  }
+  function loopVisualizer(real) {
+    const data = real ? new Uint8Array(analyser.frequencyBinCount) : null;
+    function frame() {
+      let values = null;
+      if (real) { analyser.getByteFrequencyData(data); values = data; }
+      visualizerBars.forEach(function (bar, i) {
+        const v = values ? (values[i % values.length] || 0) : (30 + Math.random() * 220);
+        bar.style.height = Math.max(12, (v / 255) * 100) + "%";
+      });
+      modalBars.forEach(function (bar, i) {
+        const v = values ? (values[i % values.length] || 0) : (20 + Math.random() * 230);
+        bar.style.height = Math.max(8, (v / 255) * 100) + "%";
+      });
+      drawRadial(values);
+      rafId = requestAnimationFrame(frame);
+    }
+    frame();
+  }
+  function getAccentColor() { return getComputedStyle(document.documentElement).getPropertyValue("--jb-accent-1").trim() || "#00E0A0"; }
+  function drawRadial(values) {
+    const w = radialCanvas.width, h = radialCanvas.height, cx = w / 2, cy = h / 2, innerR = 64, maxLen = 36, bars = 40;
+    rctx.clearRect(0, 0, w, h);
+    rctx.strokeStyle = getAccentColor(); rctx.lineWidth = 3; rctx.lineCap = "round";
+    for (let i = 0; i < bars; i++) {
+      const angle = (i / bars) * Math.PI * 2 - Math.PI / 2;
+      const v = values ? (values[i % values.length] || 0) : (20 + Math.random() * 220);
+      const len = Math.max(4, (v / 255) * maxLen);
+      const x1 = cx + Math.cos(angle) * innerR, y1 = cy + Math.sin(angle) * innerR;
+      const x2 = cx + Math.cos(angle) * (innerR + len), y2 = cy + Math.sin(angle) * (innerR + len);
+      rctx.globalAlpha = 0.55 + (v / 255) * 0.45;
+      rctx.beginPath(); rctx.moveTo(x1, y1); rctx.lineTo(x2, y2); rctx.stroke();
+    }
+    rctx.globalAlpha = 1;
+  }
+  function stopVisualizer() {
+    if (rafId) cancelAnimationFrame(rafId);
+    visualizerBars.forEach(function (bar) { bar.style.height = "15%"; });
+    modalBars.forEach(function (bar) { bar.style.height = "10%"; });
+    rctx.clearRect(0, 0, radialCanvas.width, radialCanvas.height);
+  }
+
+  function updateFavButtons() {
+    if (!currentStation) return;
+    let fav = false;
+    if (playbackMode === "radio") fav = isFavorite(currentStation.stationuuid);
+    else fav = currentPodcast ? isSubscribed(currentPodcast.collectionId) : false;
+    modalFav.textContent = fav ? "★" : "☆";
+    modalFav.classList.toggle("fav-active", fav);
+  }
+
+  function setStatus(text) { nowStatus.textContent = text; modalStatus.textContent = text; }
+
+  function playMedia(media, mode, podcastMeta) {
+    currentStation = media; playbackMode = mode;
+    audioEl.src = media.url_resolved;
+    audioEl.play().catch(function () { setStatus("ERROR DE SEÑAL"); });
+    nowName.textContent = media.name || "Sin nombre";
+    modalName.textContent = media.name || "Sin nombre";
+
+    if (mode === "radio") {
+      modalMeta.innerHTML = '<span>' + escapeHtml(media.countrycode || media.country || "") + '</span>' +
+        (media.bitrate ? '<span>' + media.bitrate + ' kbps</span>' : '') + (media.codec ? '<span>' + escapeHtml(media.codec) + '</span>' : '');
+      modalTag.childNodes[modalTag.childNodes.length - 1].textContent = "REPRODUCIENDO";
+      liveDot.style.display = ""; modalLiveDot.style.display = "";
+      seekRow.classList.remove("show");
+    } else {
+      modalMeta.innerHTML = podcastMeta ? '<span>' + escapeHtml(podcastMeta.trackName || "") + '</span>' : "";
+      modalTag.childNodes[modalTag.childNodes.length - 1].textContent = "PODCAST";
+      liveDot.style.display = "none"; modalLiveDot.style.display = "none";
+      seekRow.classList.add("show");
+      seekRange.value = 0; seekCurrent.textContent = "0:00"; seekDuration.textContent = "0:00";
+    }
+
+    orbEmoji.textContent = mode === "podcast" ? "🎧" : iconFor(media);
+    const oldImg = orbCore.querySelector("img"); if (oldImg) oldImg.remove();
+    if (media.favicon) {
+      const img = document.createElement("img");
+      img.src = media.favicon; img.alt = "";
+      img.onerror = function () { img.remove(); };
+      orbCore.appendChild(img);
+    }
+
+    setStatus(mode === "radio" ? "EN VIVO" : "REPRODUCIENDO");
+    playerBar.classList.add("visible");
+    playBtn.textContent = "⏸"; modalPlayBtn.textContent = "⏸";
+    orbRing.classList.remove("paused");
+    updateFavButtons();
+    setupVisualizer();
+    openModal();
+  }
+
+  function playStation(station) {
+    playMedia(station, "radio");
+    if (currentTab === "favoritos") renderFavoritesTab(); else runSearch();
+    if (station.stationuuid) { for (const base of mirrors) { fetch(base + "/json/url/" + station.stationuuid).catch(function () {}); break; } }
+  }
+  function playEpisode(ep, podcast) {
+    playMedia({ name: ep.title, url_resolved: ep.url, favicon: podcast.artworkUrl600 || podcast.artworkUrl100 }, "podcast", podcast);
+  }
+
+  function togglePlayPause() {
+    if (!currentStation) return;
+    if (audioEl.paused) {
+      audioEl.play(); playBtn.textContent = "⏸"; modalPlayBtn.textContent = "⏸";
+      orbRing.classList.remove("paused"); setStatus(playbackMode === "radio" ? "EN VIVO" : "REPRODUCIENDO"); setupVisualizer();
+    } else {
+      audioEl.pause(); playBtn.textContent = "▶"; modalPlayBtn.textContent = "▶";
+      orbRing.classList.add("paused"); setStatus("PAUSA"); stopVisualizer();
+    }
+  }
+  playBtn.addEventListener("click", function (e) { e.stopPropagation(); togglePlayPause(); });
+  modalPlayBtn.addEventListener("click", togglePlayPause);
+
+  modalFav.addEventListener("click", function () {
+    if (!currentStation) return;
+    if (playbackMode === "radio") { toggleFavorite(currentStation); if (currentTab === "favoritos") renderFavoritesTab(); else runSearch(); }
+    else if (currentPodcast) { toggleSub(currentPodcast); if (currentTab === "favoritos" || podcastSubtab === "suscripciones") renderSubscriptions(); }
+    updateFavButtons();
+  });
+
+  // ---------- Barra de progreso (podcasts) ----------
+  audioEl.addEventListener("loadedmetadata", function () {
+    if (playbackMode !== "podcast") return;
+    seekRange.max = isFinite(audioEl.duration) ? audioEl.duration : 0;
+    seekDuration.textContent = formatTime(audioEl.duration);
+  });
+  audioEl.addEventListener("timeupdate", function () {
+    if (playbackMode !== "podcast" || isSeeking) return;
+    seekRange.value = audioEl.currentTime;
+    seekCurrent.textContent = formatTime(audioEl.currentTime);
+  });
+  seekRange.addEventListener("input", function () { isSeeking = true; seekCurrent.textContent = formatTime(Number(seekRange.value)); });
+  seekRange.addEventListener("change", function () { audioEl.currentTime = Number(seekRange.value); isSeeking = false; });
+
+  // ---------- Modal abrir / cerrar ----------
+  function openModal() { playerModal.classList.add("open"); }
+  function closeModal() { playerModal.classList.remove("open"); }
+  playerBar.addEventListener("click", function () { if (currentStation) openModal(); });
+  modalClose.addEventListener("click", function (e) { e.stopPropagation(); closeModal(); });
+  modalCloseBtn.addEventListener("click", function (e) { e.stopPropagation(); closeModal(); });
+  modalBackdrop.addEventListener("click", closeModal);
+
+  audioEl.addEventListener("waiting", function () { setStatus("CONECTANDO..."); });
+  audioEl.addEventListener("playing", function () { setStatus(playbackMode === "radio" ? "EN VIVO" : "REPRODUCIENDO"); });
+  audioEl.addEventListener("error", function () { setStatus("ERROR DE SEÑAL"); stopVisualizer(); });
+
+  // ---------- Sincronizar con TV (retraso de audio) ----------
+  const syncBtn = document.getElementById("syncBtn");
+  const syncMenu = document.getElementById("syncMenu");
+  const syncRange = document.getElementById("syncRange");
+  const syncVal = document.getElementById("syncVal");
+  const syncPresets = document.getElementById("syncPresets");
+
+  function formatSyncLabel(sec) {
+    if (sec >= 60) {
+      const m = Math.floor(sec / 60), s = Math.round(sec % 60);
+      return m + "m" + (s > 0 ? " " + s + "s" : "");
+    }
+    return sec.toFixed(1) + "s";
+  }
+  function applySyncDelay(sec) {
+    syncDelaySeconds = sec;
+    localStorage.setItem("jbradio_sync_delay", String(sec));
+    if (delayNode) delayNode.delayTime.value = sec;
+    syncRange.value = sec;
+    syncVal.textContent = formatSyncLabel(sec);
+    syncBtn.textContent = sec > 0 ? "🔄 " + formatSyncLabel(sec) : "🔄";
+    syncBtn.classList.toggle("active", sec > 0);
+    syncPresets.querySelectorAll("button").forEach(function (b) { b.classList.toggle("active", Number(b.dataset.sync) === sec); });
+  }
+  applySyncDelay(syncDelaySeconds);
+
+  syncBtn.addEventListener("click", function (e) { e.stopPropagation(); timerMenu.classList.remove("open"); syncMenu.classList.toggle("open"); });
+  document.addEventListener("click", function (e) { if (!e.target.closest(".timer-wrap")) syncMenu.classList.remove("open"); });
+  syncRange.addEventListener("input", function () { applySyncDelay(Number(syncRange.value)); });
+  syncPresets.addEventListener("click", function (e) {
+    const btn = e.target.closest("button"); if (!btn) return;
+    applySyncDelay(Number(btn.dataset.sync));
+  });
+
+  // ---------- Temporizador (sleep timer) ----------
+  const timerBtn = document.getElementById("timerBtn");
+  const timerMenu = document.getElementById("timerMenu");
+  let sleepTimerEnd = null, sleepTimerInterval = null;
+
+  timerBtn.addEventListener("click", function (e) { e.stopPropagation(); syncMenu.classList.remove("open"); timerMenu.classList.toggle("open"); });
+  document.addEventListener("click", function (e) { if (!e.target.closest(".timer-wrap")) timerMenu.classList.remove("open"); });
+
+  timerMenu.querySelectorAll(".timer-opt").forEach(function (opt) {
+    opt.addEventListener("click", function () {
+      const min = Number(opt.dataset.min);
+      timerMenu.classList.remove("open");
+      if (min > 0) startSleepTimer(min); else clearSleepTimer();
+    });
+  });
+
+  function startSleepTimer(minutes) {
+    clearSleepTimer();
+    sleepTimerEnd = Date.now() + minutes * 60000;
+    timerBtn.classList.add("active");
+    updateSleepTimerDisplay();
+    sleepTimerInterval = setInterval(updateSleepTimerDisplay, 1000);
+  }
+  function clearSleepTimer() {
+    if (sleepTimerInterval) clearInterval(sleepTimerInterval);
+    sleepTimerInterval = null; sleepTimerEnd = null;
+    timerBtn.classList.remove("active"); timerBtn.textContent = "⏰";
+  }
+  function updateSleepTimerDisplay() {
+    if (!sleepTimerEnd) return;
+    const remain = sleepTimerEnd - Date.now();
+    if (remain <= 0) {
+      clearSleepTimer();
+      if (currentStation && !audioEl.paused) togglePlayPause();
+      setStatus("⏰ TEMPORIZADOR FINALIZADO");
+      return;
+    }
+    timerBtn.textContent = "⏰ " + formatTime(remain / 1000);
+  }
+
+  // ================= INICIO =================
+  showRadioPlaceholder();
+
+  // Registro del Service Worker (permite instalar la app y que abra al instante)
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js").catch(function () {});
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
